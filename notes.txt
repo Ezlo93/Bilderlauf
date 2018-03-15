@@ -1,0 +1,20 @@
+- Bild einlesen, mittleren Farbwert bestimmen
+- anhand dessen jedem Pixel eine Höhe zuordnen
+- Hexagon für jeden Pixel zeichnen mit entsprechender Farbe
+- W A S D bewegen
+- mit Q an Decke switchen
+- Datenstruktur mit 2fach Array mit allen Pixel RGB + Min und Max Farbe
+
+
+Roadmap:
+
+0.1: bmp Bild laden in ein Color Array -- done
+0.2: Einzelnes Hexagon mit Farbe zeichnen -- done
+0.3: Alle Hexagons zeichnen --done
+0.4: Hexagons verschiedene Höhe geben --done
+0.5: BMP Ladefix --done
+0.6: Neue Kamera.c
+0.7: Maus zum Bewegen der Kamera
+0.8: Laufen des Spielers über das Bild
+0.9: Draw Distance
+1.0: Stereoskopie
