@@ -24,6 +24,9 @@
     <ClCompile Include="..\Src\bl_camera.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\bl_character.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\Bilderlauf.h">
@@ -36,6 +39,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\bl_camera.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\bl_character.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

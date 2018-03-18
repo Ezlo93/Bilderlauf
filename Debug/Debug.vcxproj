@@ -14,11 +14,13 @@
     <ClCompile Include="..\Src\Bilderlauf.c" />
     <ClCompile Include="..\Src\bl_bmp.c" />
     <ClCompile Include="..\Src\bl_camera.c" />
+    <ClCompile Include="..\Src\bl_character.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\Bilderlauf.h" />
     <ClInclude Include="..\Src\bl_bmp.h" />
     <ClInclude Include="..\Src\bl_camera.h" />
+    <ClInclude Include="..\Src\bl_character.h" />
     <ClInclude Include="..\Src\debug.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
