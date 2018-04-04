@@ -24,6 +24,7 @@ typedef struct{
 typedef struct{
 	bl_CameraPosition Position;
 	bl_CameraPosition LookAt;
+	float yaw, pitch, strafe_x, strafe_y;
 	int Mode;
 } bl_Camera;
 
@@ -32,7 +33,9 @@ typedef struct{
 bl_Camera *CreateCamera(bl_CameraPosition CameraPosition,  int mode);
 bl_CameraPosition CreateCameraPosition(float x, float y, float z);
 void bl_CameraInfo(bl_Camera *camera);
-
+void bl_CameraUpdate(bl_Camera *camera);
+void bl_CameraRotatePitch(bl_Camera *camera, float angle);
+void bl_CameraRotateYaw(bl_Camera *camera, float angle);
 
 
 #endif

@@ -25,12 +25,8 @@ bl_Camera *CreateCamera(bl_CameraPosition CameraPosition, int mode){
 	//Set LookAt depending on mode
 	camera->LookAt = camera->Position;
 
-	switch(camera->Mode){
-		case BL_CAM_TOP: camera->LookAt.X += 1; break;
-		case BL_CAM_FPP: camera->LookAt.X += 1; break;
-	}
-
-	//camera->LookAt = CreateCameraPosition(0,4,-5);
+	camera->pitch = 0;
+	camera->yaw = 0;
 
 	return camera;
 }
@@ -48,4 +44,40 @@ void bl_CameraInfo(bl_Camera *camera){
 	printf("Mode: %d\n", camera->Mode);
 	printf("Position: %f %f %f\n", camera->Position.X, camera->Position.Y, camera->Position.Z);
 	printf("LookAt: %f %f %f\n", camera->LookAt.X, camera->LookAt.Y, camera->LookAt.Z);
+	printf("Pitch: %f\nYaw: %f\n", camera->pitch, camera->yaw);
+}
+
+
+void bl_CameraUpdate(bl_Camera *camera){
+	camera->LookAt.X = cos(camera->yaw) * cos(camera->pitch);
+	camera->LookAt.Y = sin(camera->pitch);
+	camera->LookAt.Z = sin(camera->yaw) * cos(camera->pitch);
+
+	camera->strafe_x = cos(camera->yaw - M_PI/2);
+	camera->strafe_y = sin(camera->yaw - M_PI/2);
+
+}
+
+
+//Up/Down Rotation of the camera
+void bl_CameraRotatePitch(bl_Camera *camera, float angle){
+	static const float limit = 89 * M_PI / 180.0;
+
+	camera->pitch += angle;
+
+    if(camera->pitch < -limit)
+        camera->pitch = -limit;
+
+    if(camera->pitch > limit)
+        camera->pitch = limit;
+
+}
+
+//Left/Right Rotation of the camera
+void bl_CameraRotateYaw(bl_Camera *camera, float angle){
+
+	
+	camera->yaw = fmod((camera->yaw+angle),2.f*M_PI);
+
+
 }

@@ -4,6 +4,7 @@
 #include "debug.h"
 
 #define ESC        27
+#define CAMERAMAX 2
 
 enum {X=0, Y=1, Z=2, W=3};
 enum {DRAW_HEXAGON=0,DRAW_CUBE=1};
@@ -35,7 +36,10 @@ int xOrigin = -1;
 
 //Camera
 int cameraCurrent = 0;
-bl_Camera *cameras[2];
+bl_Camera *cameras[CAMERAMAX];
+float rotation_speed = M_PI/180*0.1f;
+int cameraReverseX = 1, cameraReverseY = -1;
+
 
 //BMP Load Structures
 BL_BITMAPINFOHEADER bitmapInfoHeader;
@@ -144,6 +148,25 @@ void drawCube(int x, int y, bl_BMPData *data){
 	glutSolidCube(bl_cubesize);
 }
 
+
+
+ bl_CameraPosition calculateTopCameraPosition(){
+	 bl_CameraPosition pos;
+	 float w;
+
+	 switch(drawMode){
+		case 0: w = bl_hexawidth;
+		case 1: w = bl_cubesize;
+	 }
+
+	 pos.X = (bl_PictureData->bmpWidth * w + bl_PictureData->bmpWidth * xOffset)/2;
+	 pos.Y = (bl_PictureData->bmpHeight * w + bl_PictureData->bmpHeight * yOffset)/2;
+	 pos.Z = 5;
+
+	 return pos;
+ }
+
+
 //Draw routine
 /*************************************************************************/
 void draw(void)
@@ -157,18 +180,18 @@ void draw(void)
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	gluPerspective( 80, winWidth / winHeight, 0.1, fern );
+	gluPerspective( 60, winWidth / winHeight, 0.1, fern );
+
+	bl_CameraUpdate(cameras[cameraCurrent]);
 
 	gluLookAt
 		( 
 		cameras[cameraCurrent]->Position.X, cameras[cameraCurrent]->Position.Y, cameras[cameraCurrent]->Position.Z,
-		cameras[cameraCurrent]->LookAt.X,cameras[cameraCurrent]->LookAt.Y,cameras[cameraCurrent]->LookAt.Z,
+		cameras[cameraCurrent]->Position.X+cameras[cameraCurrent]->LookAt.X,
+		cameras[cameraCurrent]->Position.Y+cameras[cameraCurrent]->LookAt.Y,
+		cameras[cameraCurrent]->Position.Z+cameras[cameraCurrent]->LookAt.Z,
 		0, 1, 0
 		);
-
-#if DEBUG > 0
-	bl_CameraInfo(cameras[cameraCurrent]);
-#endif
 
 	glMatrixMode( GL_MODELVIEW );
 
@@ -198,14 +221,13 @@ void key(unsigned char key, int x, int y)
 { 
 	switch (key)
 	{ case ESC: exit(0); break;
-	case 'q': cameras[0]->LookAt.X += 0.01; break;
-	case 'a': cameras[0]->LookAt.X -= 0.01; break;
-	case 'w': cameras[0]->LookAt.Y += 0.5; break;
-	case 's': cameras[0]->LookAt.Y -= 0.5; break;
-	case 'e': cameras[0]->LookAt.Z += 0.5; break;
-	case 'd': cameras[0]->LookAt.Z -= 0.5; break;
+	case 'q': cameraCurrent = (cameraCurrent + 1) % CAMERAMAX; break;
+	case 'r': drawMode = !drawMode; calculateTopCameraPosition();break;
 
-	case 'r': drawMode = !drawMode;
+#if DEBUG > 0
+	case 'p': bl_CameraInfo(cameras[cameraCurrent]);break;
+#endif
+
 	}
 	glutPostRedisplay();
 	return;
@@ -217,41 +239,32 @@ void idle(void){
 
 
 void processSpecialKeys(int key, int xx, int yy) {
-	/*
-	float fraction = 0.1f;
 
-	switch (key) {
-	case GLUT_KEY_LEFT :
-	cameraAngle -= 0.01f;
-	cameraDirX = sin(cameraAngle);
-	cameraDirZ = -cos(cameraAngle);
-	break;
-	case GLUT_KEY_RIGHT :
-	cameraAngle += 0.01f;
-	cameraDirX = sin(cameraAngle);
-	cameraDirZ = -cos(cameraAngle);
-	break;
-	case GLUT_KEY_UP :
-	cameraDirX += cameraDirX * fraction;
-	cameraDirZ += cameraDirZ * fraction;
-	break;
-	case GLUT_KEY_DOWN :
-	cameraDirX -= cameraDirX * fraction;
-	cameraDirZ -= cameraDirZ * fraction;
-	break;
-	}*/
 }
 
 void mouseMove(int x, int y){
 
-	if (xOrigin >= 0){
+	static int just_warped = 0;
+	int dx = x - winWidth/2;
+    int dy = y - winHeight/2;
 
-		deltaAngle = (x- xOrigin) * .001f;
+    if(just_warped) {
+        just_warped = 0;
+        return;
+    }
 
+        if(dx) {
+            bl_CameraRotateYaw(cameras[cameraCurrent],rotation_speed*dx*cameraReverseX);
+        }
 
-	}
+        if(dy) {
+			bl_CameraRotatePitch(cameras[cameraCurrent],rotation_speed*dy*cameraReverseY);
+        }
 
+        glutWarpPointer(winWidth/2, winHeight/2);
 
+        just_warped = 1;
+		draw();
 }
 
 
@@ -315,7 +328,7 @@ int main(int argc, char **argv)
 
 	//Start GLUT Window, hide console
 #if DEBUG == 0
-	//FreeConsole();
+	FreeConsole();
 #endif
 
 	//Load BMP File
@@ -345,31 +358,27 @@ int main(int argc, char **argv)
 
 
 	//Basecamera Position
-	cameras[0] = CreateCamera(CreateCameraPosition(0,-5,3.5), BL_CAM_TOP);
+	cameras[0] = CreateCamera(calculateTopCameraPosition(), BL_CAM_TOP);
 	cameras[1] = CreateCamera(CreateCameraPosition(0,0,1), BL_CAM_FPP);
 
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	glutInitDisplayMode(GLUT_DOUBLE |  GLUT_DEPTH);
 
 	glFrustum (-1.0, 1.0, -1.0, 1.0, nah, fern); 
 	glutInitWindowSize(winWidth, winHeight);
 	glutCreateWindow(prgNameBuffer);
 
-
-
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0,0.75f,0.75f,1.f);
 
-	//glEnable (GL_POINT_SMOOTH); 
-	//glEnable (GL_LINE_SMOOTH);  glEnable (GL_BLEND); 
-	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 
 	glutDisplayFunc(draw);
-
 	glutKeyboardFunc(key); 
 	glutSpecialFunc(processSpecialKeys);
+	glutMotionFunc(mouseMove);
+    glutPassiveMotionFunc(mouseMove);
 
+	glutSetCursor(GLUT_CURSOR_NONE);
 	/*
 	glutSpecialFunc(pressKey);
 
