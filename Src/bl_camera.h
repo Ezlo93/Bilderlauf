@@ -24,7 +24,7 @@ typedef struct{
 typedef struct{
 	bl_CameraPosition Position;
 	bl_CameraPosition LookAt;
-	float yaw, pitch, strafe_x, strafe_y;
+	float yaw, pitch;
 	int Mode;
 } bl_Camera;
 

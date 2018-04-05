@@ -142,7 +142,13 @@ void drawCube(int x, int y, bl_BMPData *data){
 	transX += xOffset * x;
 	transY += yOffset * y;
 
-	glTranslatef(transX, transY, transZ);
+	switch(cameras[cameraCurrent]->Mode){
+
+	case BL_CAM_FPP: glTranslatef(transX, transZ, transY); break;
+	case BL_CAM_TOP: glTranslatef(transX, transY, transZ); break;
+
+	}
+
 	glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
 
 	glutSolidCube(bl_cubesize);
@@ -183,18 +189,18 @@ void draw(void)
 	gluPerspective( 60, winWidth / winHeight, 0.1, fern );
 
 	bl_CameraUpdate(cameras[cameraCurrent]);
-
+	
 	gluLookAt
 		( 
 		cameras[cameraCurrent]->Position.X, cameras[cameraCurrent]->Position.Y, cameras[cameraCurrent]->Position.Z,
-		cameras[cameraCurrent]->Position.X+cameras[cameraCurrent]->LookAt.X,
+		cameras[cameraCurrent]->Position.X+cameras[cameraCurrent]->LookAt.X,		
 		cameras[cameraCurrent]->Position.Y+cameras[cameraCurrent]->LookAt.Y,
 		cameras[cameraCurrent]->Position.Z+cameras[cameraCurrent]->LookAt.Z,
 		0, 1, 0
 		);
-
 	glMatrixMode( GL_MODELVIEW );
 
+	
 	for(i = 0; i < bl_PictureData->bmpHeight; i++){
 		for(j = 0; j < bl_PictureData->bmpWidth; j++){
 			glPushMatrix();
@@ -359,7 +365,7 @@ int main(int argc, char **argv)
 
 	//Basecamera Position
 	cameras[0] = CreateCamera(calculateTopCameraPosition(), BL_CAM_TOP);
-	cameras[1] = CreateCamera(CreateCameraPosition(0,0,1), BL_CAM_FPP);
+	cameras[1] = CreateCamera(CreateCameraPosition(0,2,0), BL_CAM_FPP);
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE |  GLUT_DEPTH);
@@ -371,7 +377,7 @@ int main(int argc, char **argv)
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0,0.75f,0.75f,1.f);
 
-
+	glutIgnoreKeyRepeat(1);
 	glutDisplayFunc(draw);
 	glutKeyboardFunc(key); 
 	glutSpecialFunc(processSpecialKeys);

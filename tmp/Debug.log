@@ -1,4 +1,4 @@
-﻿Der Buildvorgang wurde am 04.04.2018 22:46:04 gestartet.
+﻿Der Buildvorgang wurde am 05.04.2018 13:30:01 gestartet.
      1>Projekt "C:\VSProjects\Bilderlauf\Debug\Debug.vcxproj" auf Knoten "2", build Ziel(e).
      1>InitializeBuildStatus:
          "..\tmp\Debug.unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
@@ -21,4 +21,4 @@
 
 Das Erstellen war erfolgreich.
 
-Verstrichene Zeit 00:00:00.71
+Verstrichene Zeit 00:00:00.80

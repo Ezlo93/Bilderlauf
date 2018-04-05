@@ -53,9 +53,6 @@ void bl_CameraUpdate(bl_Camera *camera){
 	camera->LookAt.Y = sin(camera->pitch);
 	camera->LookAt.Z = sin(camera->yaw) * cos(camera->pitch);
 
-	camera->strafe_x = cos(camera->yaw - M_PI/2);
-	camera->strafe_y = sin(camera->yaw - M_PI/2);
-
 }
 
 
