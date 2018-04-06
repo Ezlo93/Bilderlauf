@@ -58,7 +58,7 @@ void bl_CameraUpdate(bl_Camera *camera){
 
 //Up/Down Rotation of the camera
 void bl_CameraRotatePitch(bl_Camera *camera, float angle){
-	static const float limit = 89 * M_PI / 180.0;
+	static const float limit = 89.9f * M_PI / 180.0;
 
 	camera->pitch += angle;
 

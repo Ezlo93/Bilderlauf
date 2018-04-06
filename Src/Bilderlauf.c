@@ -25,6 +25,8 @@ clock_t fr_begin, fr_end; char *title;
 float bl_hexasize = 1.f, bl_hexaheight, bl_hexawidth, bl_hexavert;
 GLfloat xOffset = .2, yOffset = .2;
 GLfloat hexa_vertices[12][3];
+GLfloat hexa_vertices_rotated[12][3];
+
 float height_scale = 1.f;
 
 //Cube Variables
@@ -64,9 +66,19 @@ void createHexagonVertices(float size, float height){
 
 		hexa_vertices[i][2] = 0;
 		hexa_vertices[i+6][2] = height;
+
+		//gedrehte Hexagons
+		hexa_vertices_rotated[i][0] = hexa_vertices[i][0];
+		hexa_vertices_rotated[i+6][0] = hexa_vertices[i+6][0];
+
+		hexa_vertices_rotated[i][1] = hexa_vertices[i][2];
+		hexa_vertices_rotated[i+6][1] = hexa_vertices[i+6][2];
+
+		hexa_vertices_rotated[i][2] = hexa_vertices[i][1];
+		hexa_vertices_rotated[i+6][2] = hexa_vertices[i+6][1];
 	}
 
-	bl_hexaheight = size*2;
+	bl_hexaheight = size*2; 
 	bl_hexawidth = sqrt(3.f)/2* bl_hexaheight;
 	bl_hexavert = height*2 * 3/4;
 }
@@ -89,44 +101,89 @@ void drawHexagon(int x, int y, bl_BMPData *data)
 		{5, 11, 6, 0}
 	};
 
-	//Position
-	transX = bl_hexawidth * x;
-	transY = bl_hexavert * y;
-	transZ = data->bmpData[data->bmpWidth*y+x].Height;
+	//Normal hexagon for Top View
+	if(cameras[cameraCurrent]->Mode == BL_CAM_TOP){
+
+		//Position
+		transX = bl_hexawidth * x;
+		transY = bl_hexavert * y;
+		transZ = data->bmpData[data->bmpWidth*y+x].Height;
 
 
-	//translate x of odd rows
-	if (y % 2 == 1){
-		transX -= bl_hexawidth / 2;
+		//translate x of odd rows
+		if (y % 2 == 1){
+			transX -= bl_hexawidth / 2;
+		}
+
+		//Additional offset
+		transX += xOffset * x;
+		transY += yOffset * y;
+
+		//Translation & Color of Hexagon
+		glTranslatef(transX, transY, transZ);
+		glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
+
+		//Top and bottom face
+		for(i = 0; i < 2; i++){
+			glBegin(GL_POLYGON);
+			for(j = 0; j < 6; j++){
+				glVertex3fv(hexa_vertices[j+i*6]); }
+			glVertex3fv(hexa_vertices[i*6]);
+			glEnd();
+		}
+
+		//Side faces
+		for (i = 0; i < 6; i++) {
+			glBegin(GL_QUADS);
+			glVertex3fv(hexa_vertices[side_faces[i][0]]);
+			glVertex3fv(hexa_vertices[side_faces[i][1]]);
+			glVertex3fv(hexa_vertices[side_faces[i][2]]);
+			glVertex3fv(hexa_vertices[side_faces[i][3]]);
+			glEnd();
+		}
+
+	//Rotated Hexagon for first person view
+	}else if(cameras[cameraCurrent]->Mode == BL_CAM_FPP){
+
+		//Position
+		transX = bl_hexawidth * x;
+		transY = data->bmpData[data->bmpWidth*y+x].Height;
+		transZ = bl_hexavert * y;
+
+
+		//translate x of odd rows
+		if (y % 2 == 1){
+			transX -= bl_hexawidth / 2;
+		}
+
+		//Additional offset
+		transX += xOffset * x;
+		transZ += yOffset * y;
+
+		//Translation & Color of Hexagon
+		glTranslatef(transX, transY, transZ);
+		glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
+
+		//Top and bottom face
+		for(i = 0; i < 2; i++){
+			glBegin(GL_POLYGON);
+			for(j = 0; j < 6; j++){
+				glVertex3fv(hexa_vertices_rotated[j+i*6]); }
+			glVertex3fv(hexa_vertices_rotated[i*6]);
+			glEnd();
+		}
+
+		//Side faces
+		for (i = 0; i < 6; i++) {
+			glBegin(GL_QUADS);
+			glVertex3fv(hexa_vertices_rotated[side_faces[i][0]]);
+			glVertex3fv(hexa_vertices_rotated[side_faces[i][1]]);
+			glVertex3fv(hexa_vertices_rotated[side_faces[i][2]]);
+			glVertex3fv(hexa_vertices_rotated[side_faces[i][3]]);
+			glEnd();
+		}
+
 	}
-
-	//Additional offset
-	transX += xOffset * x;
-	transY += yOffset * y;
-
-	//Translation & Color of Hexagon
-	glTranslatef(transX, transY, transZ);
-	glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
-
-	//Top and bottom face
-	for(i = 0; i < 2; i++){
-		glBegin(GL_POLYGON);
-		for(j = 0; j < 6; j++){
-			glVertex3fv(hexa_vertices[j+i*6]); }
-		glVertex3fv(hexa_vertices[i*6]);
-		glEnd();
-	}
-
-	//Side faces
-	for (i = 0; i < 6; i++) {
-		glBegin(GL_QUADS);
-		glVertex3fv(hexa_vertices[side_faces[i][0]]);
-		glVertex3fv(hexa_vertices[side_faces[i][1]]);
-		glVertex3fv(hexa_vertices[side_faces[i][2]]);
-		glVertex3fv(hexa_vertices[side_faces[i][3]]);
-		glEnd();
-	}
-
 }
 
 //Draws a cube at x, y position
@@ -156,21 +213,21 @@ void drawCube(int x, int y, bl_BMPData *data){
 
 
 
- bl_CameraPosition calculateTopCameraPosition(){
-	 bl_CameraPosition pos;
-	 float w;
+bl_CameraPosition calculateTopCameraPosition(){
+	bl_CameraPosition pos;
+	float w;
 
-	 switch(drawMode){
-		case 0: w = bl_hexawidth;
-		case 1: w = bl_cubesize;
-	 }
+	switch(drawMode){
+	case 0: w = bl_hexawidth;
+	case 1: w = bl_cubesize;
+	}
 
-	 pos.X = (bl_PictureData->bmpWidth * w + bl_PictureData->bmpWidth * xOffset)/2;
-	 pos.Y = (bl_PictureData->bmpHeight * w + bl_PictureData->bmpHeight * yOffset)/2;
-	 pos.Z = 5;
+	pos.X = (bl_PictureData->bmpWidth * w + bl_PictureData->bmpWidth * xOffset)/2;
+	pos.Y = (bl_PictureData->bmpHeight * w + bl_PictureData->bmpHeight * yOffset)/2;
+	pos.Z = 5;
 
-	 return pos;
- }
+	return pos;
+}
 
 
 //Draw routine
@@ -189,7 +246,7 @@ void draw(void)
 	gluPerspective( 60, winWidth / winHeight, 0.1, fern );
 
 	bl_CameraUpdate(cameras[cameraCurrent]);
-	
+
 	gluLookAt
 		( 
 		cameras[cameraCurrent]->Position.X, cameras[cameraCurrent]->Position.Y, cameras[cameraCurrent]->Position.Z,
@@ -198,9 +255,10 @@ void draw(void)
 		cameras[cameraCurrent]->Position.Z+cameras[cameraCurrent]->LookAt.Z,
 		0, 1, 0
 		);
+
 	glMatrixMode( GL_MODELVIEW );
 
-	
+
 	for(i = 0; i < bl_PictureData->bmpHeight; i++){
 		for(j = 0; j < bl_PictureData->bmpWidth; j++){
 			glPushMatrix();
@@ -232,6 +290,12 @@ void key(unsigned char key, int x, int y)
 
 #if DEBUG > 0
 	case 'p': bl_CameraInfo(cameras[cameraCurrent]);break;
+	case 'w': cameras[cameraCurrent]->Position.X += 1;break;
+    case 's': cameras[cameraCurrent]->Position.X -= 1;break;
+	case 'd': cameras[cameraCurrent]->Position.Z += 1;break;
+	case 'a': cameras[cameraCurrent]->Position.Z -= 1;break;
+	case 'g': cameras[cameraCurrent]->Position.Y += 1;break;
+    case 'f': cameras[cameraCurrent]->Position.Y -= 1;break;
 #endif
 
 	}
@@ -252,25 +316,25 @@ void mouseMove(int x, int y){
 
 	static int just_warped = 0;
 	int dx = x - winWidth/2;
-    int dy = y - winHeight/2;
+	int dy = y - winHeight/2;
 
-    if(just_warped) {
-        just_warped = 0;
-        return;
-    }
+	if(just_warped) {
+		just_warped = 0;
+		return;
+	}
 
-        if(dx) {
-            bl_CameraRotateYaw(cameras[cameraCurrent],rotation_speed*dx*cameraReverseX);
-        }
+	if(dx) {
+		bl_CameraRotateYaw(cameras[cameraCurrent],rotation_speed*dx*cameraReverseX);
+	}
 
-        if(dy) {
-			bl_CameraRotatePitch(cameras[cameraCurrent],rotation_speed*dy*cameraReverseY);
-        }
+	if(dy) {
+		bl_CameraRotatePitch(cameras[cameraCurrent],rotation_speed*dy*cameraReverseY);
+	}
 
-        glutWarpPointer(winWidth/2, winHeight/2);
+	glutWarpPointer(winWidth/2, winHeight/2);
 
-        just_warped = 1;
-		draw();
+	just_warped = 1;
+	draw();
 }
 
 
@@ -382,7 +446,7 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(key); 
 	glutSpecialFunc(processSpecialKeys);
 	glutMotionFunc(mouseMove);
-    glutPassiveMotionFunc(mouseMove);
+	glutPassiveMotionFunc(mouseMove);
 
 	glutSetCursor(GLUT_CURSOR_NONE);
 	/*
