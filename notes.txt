@@ -13,8 +13,8 @@ Roadmap:
 0.3: Alle Hexagons zeichnen --done
 0.4: Hexagons verschiedene Höhe geben --done
 0.5: BMP Ladefix --done
-0.6: Neue Kamera.c
-0.7: Maus zum Bewegen der Kamera
+0.6: Neue Kamera.c --done
+0.7: Maus zum Bewegen der Kamera --done
 0.8: Laufen des Spielers über das Bild
 0.9: Draw Distance
 1.0: Stereoskopie

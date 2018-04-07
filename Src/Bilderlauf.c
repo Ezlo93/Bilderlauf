@@ -23,7 +23,7 @@ clock_t fr_begin, fr_end; char *title;
 
 //Hexagon Variables
 float bl_hexasize = 1.f, bl_hexaheight, bl_hexawidth, bl_hexavert;
-GLfloat xOffset = .2, yOffset = .2;
+GLfloat xOffset = .1, yOffset = .1;
 GLfloat hexa_vertices[12][3];
 GLfloat hexa_vertices_rotated[12][3];
 

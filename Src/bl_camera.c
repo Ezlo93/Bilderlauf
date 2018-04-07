@@ -74,7 +74,7 @@ void bl_CameraRotatePitch(bl_Camera *camera, float angle){
 void bl_CameraRotateYaw(bl_Camera *camera, float angle){
 
 	
-	camera->yaw = fmod((camera->yaw+angle),2.f*M_PI);
+	camera->yaw = fmod((float)(camera->yaw+angle),(float)(2.f*M_PI));
 
 
 }

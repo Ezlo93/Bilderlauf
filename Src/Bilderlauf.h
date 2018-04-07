@@ -16,10 +16,8 @@
 #include "bl_camera.h"
 
 #define MVERSION 0
-#define SVERSION 6
+#define SVERSION 7
+
 #define FILENAMEBUFFER 1000
-#ifndef M_PI
-#    define M_PI 3.14159265358979323846
-#endif
 
 #endif
