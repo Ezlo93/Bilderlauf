@@ -18,6 +18,6 @@
 #define MVERSION 0
 #define SVERSION 7
 
-#define FILENAMEBUFFER 1000
+#define FILENAMEBUFFER 100
 
 #endif

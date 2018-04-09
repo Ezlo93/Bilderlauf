@@ -140,7 +140,7 @@ void drawHexagon(int x, int y, bl_BMPData *data)
 	}else{
 		memcpy(hexa_vertices_scaled, hexa_vertices, sizeof(hexa_vertices));
 		for(i = 0; i < 6; i++){
-			hexa_vertices_scaled[i][2] -= transY;
+			hexa_vertices_scaled[i][2] -= transZ;
 		}
 
 	}
@@ -216,7 +216,7 @@ static GLint faces[6][4] =
   v[4][0] = v[5][0] = v[6][0] = v[7][0] = bl_cubesize / 2;
   v[0][1] = v[1][1] = v[4][1] = v[5][1] = -bl_cubesize / 2;
   v[2][1] = v[3][1] = v[6][1] = v[7][1] = bl_cubesize / 2;
-  v[0][2] = v[3][2] = v[4][2] = v[7][2] = -bl_cubesize *2;
+  v[0][2] = v[3][2] = v[4][2] = v[7][2] = -bl_cubesize / 2;
   v[1][2] = v[2][2] = v[5][2] = v[6][2] = bl_cubesize / 2;
 
   for (i = 5; i >= 0; i--) {
@@ -327,13 +327,22 @@ void key(unsigned char key, int x, int y)
 }
 
 void idle(void){
-	glutPostRedisplay();
+	
 }
 
 
 void processSpecialKeys(int key, int xx, int yy) {
 
 }
+
+
+
+void timer(int a) {
+    glutPostRedisplay();
+    glutTimerFunc(1000/120, timer, 0);
+}
+
+
 
 void mouseMove(int x, int y){
 
@@ -357,7 +366,7 @@ void mouseMove(int x, int y){
 	glutWarpPointer(winWidth/2, winHeight/2);
 
 	just_warped = 1;
-	draw();
+
 }
 
 
@@ -470,7 +479,7 @@ int main(int argc, char **argv)
 	glutSpecialFunc(processSpecialKeys);
 	glutMotionFunc(mouseMove);
 	glutPassiveMotionFunc(mouseMove);
-	glutIdleFunc(draw);
+	glutIdleFunc(idle);
 
 	glutSetCursor(GLUT_CURSOR_NONE);
 	/*
@@ -480,7 +489,7 @@ int main(int argc, char **argv)
 	glutIgnoreKeyRepeat(1);
 	glutSpecialUpFunc(releaseKey);
 	*/
-
+	timer(1);
 	glutMainLoop();
 	return 0;
 }
