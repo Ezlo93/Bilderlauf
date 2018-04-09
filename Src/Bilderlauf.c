@@ -12,22 +12,23 @@ enum {DRAW_HEXAGON=0,DRAW_CUBE=1};
 /*Globale Variablen: */
 
 int drawMode = DRAW_HEXAGON;
-
+GLfloat frameTime = 0, oldFrameTime = 0, deltaTime = 0;
 
 //Window Settings
 float    eyez=10., diag=0., viewScale=1., angle[3]={0.,0.,0.};
 int      backF=1, persp=1, winWidth=1636, winHeight=920; 
 GLdouble nah=1., fern=10000.;
 
-clock_t fr_begin, fr_end; char *title;
+char *title;
 
 //Hexagon Variables
 float bl_hexasize = 1.f, bl_hexaheight, bl_hexawidth, bl_hexavert;
 GLfloat xOffset = .1, yOffset = .1;
 GLfloat hexa_vertices[12][3];
 GLfloat hexa_vertices_rotated[12][3];
+GLfloat hexa_vertices_scaled[12][3];
 
-float height_scale = 1.f;
+float height_scale = 5.f;
 
 //Cube Variables
 float bl_cubesize = 1.f;
@@ -91,6 +92,8 @@ void drawHexagon(int x, int y, bl_BMPData *data)
 	GLfloat transX, transY, transZ;
 	GLint i,j;
 
+
+	//Vertices of the side faces
 	static GLint side_faces[6][4] =
 	{
 		{0, 6, 7, 1},
@@ -101,93 +104,93 @@ void drawHexagon(int x, int y, bl_BMPData *data)
 		{5, 11, 6, 0}
 	};
 
-	//Normal hexagon for Top View
-	if(cameras[cameraCurrent]->Mode == BL_CAM_TOP){
+	//Position depending on camera
+	transX = bl_hexawidth * x;
 
-		//Position
-		transX = bl_hexawidth * x;
-		transY = bl_hexavert * y;
-		transZ = data->bmpData[data->bmpWidth*y+x].Height;
-
-
-		//translate x of odd rows
-		if (y % 2 == 1){
-			transX -= bl_hexawidth / 2;
-		}
-
-		//Additional offset
-		transX += xOffset * x;
-		transY += yOffset * y;
-
-		//Translation & Color of Hexagon
-		glTranslatef(transX, transY, transZ);
-		glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
-
-		//Top and bottom face
-		for(i = 0; i < 2; i++){
-			glBegin(GL_POLYGON);
-			for(j = 0; j < 6; j++){
-				glVertex3fv(hexa_vertices[j+i*6]); }
-			glVertex3fv(hexa_vertices[i*6]);
-			glEnd();
-		}
-
-		//Side faces
-		for (i = 0; i < 6; i++) {
-			glBegin(GL_QUADS);
-			glVertex3fv(hexa_vertices[side_faces[i][0]]);
-			glVertex3fv(hexa_vertices[side_faces[i][1]]);
-			glVertex3fv(hexa_vertices[side_faces[i][2]]);
-			glVertex3fv(hexa_vertices[side_faces[i][3]]);
-			glEnd();
-		}
-
-	//Rotated Hexagon for first person view
-	}else if(cameras[cameraCurrent]->Mode == BL_CAM_FPP){
-
-		//Position
-		transX = bl_hexawidth * x;
+	if(cameras[cameraCurrent]->Mode == BL_CAM_FPP){
 		transY = data->bmpData[data->bmpWidth*y+x].Height;
 		transZ = bl_hexavert * y;
 
+	}else{
+		transY = bl_hexavert * y;
+		transZ = data->bmpData[data->bmpWidth*y+x].Height;
 
-		//translate x of odd rows
-		if (y % 2 == 1){
-			transX -= bl_hexawidth / 2;
+	}
+
+	//translate x of odd rows
+	if (y % 2 == 1){
+		transX -= bl_hexawidth / 2;
+	}
+
+	//Additional offset
+	transX += xOffset * x;
+	transZ += cameras[cameraCurrent]->Mode == BL_CAM_FPP ? yOffset * y : 0;
+	transY += cameras[cameraCurrent]->Mode == BL_CAM_TOP ? yOffset * y : 0;
+
+	//Translation & Color of Hexagon
+	glTranslatef(transX, transY, transZ);
+	glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
+
+	//Change height of hexagon
+	if(cameras[cameraCurrent]->Mode == BL_CAM_FPP){
+		memcpy(hexa_vertices_scaled, hexa_vertices_rotated, sizeof(hexa_vertices_rotated));
+		for(i = 0; i < 6; i++){
+			hexa_vertices_scaled[i][1] -= transY;
 		}
-
-		//Additional offset
-		transX += xOffset * x;
-		transZ += yOffset * y;
-
-		//Translation & Color of Hexagon
-		glTranslatef(transX, transY, transZ);
-		glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
-
-		//Top and bottom face
-		for(i = 0; i < 2; i++){
-			glBegin(GL_POLYGON);
-			for(j = 0; j < 6; j++){
-				glVertex3fv(hexa_vertices_rotated[j+i*6]); }
-			glVertex3fv(hexa_vertices_rotated[i*6]);
-			glEnd();
-		}
-
-		//Side faces
-		for (i = 0; i < 6; i++) {
-			glBegin(GL_QUADS);
-			glVertex3fv(hexa_vertices_rotated[side_faces[i][0]]);
-			glVertex3fv(hexa_vertices_rotated[side_faces[i][1]]);
-			glVertex3fv(hexa_vertices_rotated[side_faces[i][2]]);
-			glVertex3fv(hexa_vertices_rotated[side_faces[i][3]]);
-			glEnd();
+	}else{
+		memcpy(hexa_vertices_scaled, hexa_vertices, sizeof(hexa_vertices));
+		for(i = 0; i < 6; i++){
+			hexa_vertices_scaled[i][2] -= transY;
 		}
 
 	}
+
+	//Top and bottom face
+	for(i = 0; i < 2; i++){
+		glBegin(GL_POLYGON);
+		for(j = 0; j < 6; j++){
+			glVertex3fv(hexa_vertices_scaled[j+i*6]); }
+		glEnd();
+	}
+
+	//Side faces
+	for (i = 0; i < 6; i++) {
+		glBegin(GL_QUADS);
+		glVertex3fv(hexa_vertices_scaled[side_faces[i][0]]);
+		glVertex3fv(hexa_vertices_scaled[side_faces[i][1]]);
+		glVertex3fv(hexa_vertices_scaled[side_faces[i][2]]);
+		glVertex3fv(hexa_vertices_scaled[side_faces[i][3]]);
+		glEnd();
+	}
+
+
 }
 
 //Draws a cube at x, y position
 void drawCube(int x, int y, bl_BMPData *data){
+
+static GLfloat n[6][3] =
+  {
+    {-1.0, 0.0, 0.0},
+    {0.0, 1.0, 0.0},
+    {1.0, 0.0, 0.0},
+    {0.0, -1.0, 0.0},
+    {0.0, 0.0, 1.0},
+    {0.0, 0.0, -1.0}
+  };
+static GLint faces[6][4] =
+  {
+    {0, 1, 2, 3},
+    {3, 2, 6, 7},
+    {7, 6, 5, 4},
+    {4, 5, 1, 0},
+    {5, 6, 2, 1},
+    {7, 4, 0, 3}
+  };
+  GLfloat v[8][3];
+  GLint i;
+
+
 	GLfloat transX, transY, transZ;
 
 	//Position
@@ -201,14 +204,32 @@ void drawCube(int x, int y, bl_BMPData *data){
 
 	switch(cameras[cameraCurrent]->Mode){
 
-	case BL_CAM_FPP: glTranslatef(transX, transZ, transY); break;
-	case BL_CAM_TOP: glTranslatef(transX, transY, transZ); break;
+		case BL_CAM_FPP: glTranslatef(transX, transZ, transY); break;
+		case BL_CAM_TOP: glTranslatef(transX, transY, transZ); break;
 
 	}
 
 	glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
 
-	glutSolidCube(bl_cubesize);
+
+  v[0][0] = v[1][0] = v[2][0] = v[3][0] = -bl_cubesize / 2;
+  v[4][0] = v[5][0] = v[6][0] = v[7][0] = bl_cubesize / 2;
+  v[0][1] = v[1][1] = v[4][1] = v[5][1] = -bl_cubesize / 2;
+  v[2][1] = v[3][1] = v[6][1] = v[7][1] = bl_cubesize / 2;
+  v[0][2] = v[3][2] = v[4][2] = v[7][2] = -bl_cubesize *2;
+  v[1][2] = v[2][2] = v[5][2] = v[6][2] = bl_cubesize / 2;
+
+  for (i = 5; i >= 0; i--) {
+    glBegin(GL_QUADS);
+    glNormal3fv(&n[i][0]);
+    glVertex3fv(&v[faces[i][0]][0]);
+    glVertex3fv(&v[faces[i][1]][0]);
+    glVertex3fv(&v[faces[i][2]][0]);
+    glVertex3fv(&v[faces[i][3]][0]);
+    glEnd();
+  }
+
+
 }
 
 
@@ -237,8 +258,12 @@ void draw(void)
 { 
 	int i,j;
 
-	fr_begin = clock();
+	//Frametime
+	frameTime = glutGet(GLUT_ELAPSED_TIME);
+	deltaTime = frameTime - oldFrameTime;
+	oldFrameTime = frameTime;
 
+	//Start render
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode( GL_PROJECTION );
@@ -270,8 +295,6 @@ void draw(void)
 			glPopMatrix();
 		}
 	}
-
-	fr_end = clock();
 
 	glutSwapBuffers();
 
@@ -447,6 +470,7 @@ int main(int argc, char **argv)
 	glutSpecialFunc(processSpecialKeys);
 	glutMotionFunc(mouseMove);
 	glutPassiveMotionFunc(mouseMove);
+	glutIdleFunc(draw);
 
 	glutSetCursor(GLUT_CURSOR_NONE);
 	/*
