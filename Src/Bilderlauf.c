@@ -23,7 +23,7 @@ char *title;
 
 //Hexagon Variables
 float bl_hexasize = 1.f, bl_hexaheight, bl_hexawidth, bl_hexavert;
-GLfloat xOffset = .1, yOffset = .1;
+GLfloat xOffset = .0, yOffset = .0;
 GLfloat hexa_vertices[12][3];
 GLfloat hexa_vertices_rotated[12][3];
 GLfloat hexa_vertices_scaled[12][3];
@@ -387,6 +387,7 @@ int main(int argc, char **argv)
 	///
 	srand(time(NULL));
 	sprintf(prgNameBuffer, "Bilderlauf %d.%d", MVERSION, SVERSION);
+
 
 	//Open with file
 	if(argc>1){

@@ -1,11 +1,3 @@
-- Bild einlesen, mittleren Farbwert bestimmen
-- anhand dessen jedem Pixel eine Höhe zuordnen
-- Hexagon für jeden Pixel zeichnen mit entsprechender Farbe
-- W A S D bewegen
-- mit Q an Decke switchen
-- Datenstruktur mit 2fach Array mit allen Pixel RGB + Min und Max Farbe
-
-
 Roadmap:
 
 0.1: bmp Bild laden in ein Color Array -- done
@@ -18,3 +10,7 @@ Roadmap:
 0.8: Laufen des Spielers über das Bild
 0.9: Draw Distance
 1.0: Stereoskopie
+
+//todo
+fix height for boxes
+bl_character
