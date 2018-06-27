@@ -378,7 +378,7 @@ int main(int argc, char **argv)
 { 
 
 	char prgNameBuffer[50];
-	char filePath[FILENAMEBUFFER];
+	char filePath[FILENAMEBUFFER], filePath2[FILENAMEBUFFER];
 	char fileName[64];
 	char fileExt[8];
 	FILE *file;
@@ -403,10 +403,12 @@ int main(int argc, char **argv)
 		strtok(filePath, "\n");
 
 		//DEBUG
+#if DEBUG > 0
 		if( strcmp(filePath, "-") == 0)
-			strcpy(filePath, "C:\\VSProjects\\depp4.bmp");
-		printf("\n");
+			strcpy(filePath, "C://VSProjects//depp4.bmp");
 
+		printf("\n");
+#endif
 	}
 
 	//Start timer
@@ -414,19 +416,21 @@ int main(int argc, char **argv)
 
 	//Check if input is a valid file
 	file = fopen(filePath, "r");
-
+	
 	if(!file) {
-		printf("Invalid path!\n"); getchar();
-		exit(1);
+
+		sprintf(filePath2, "bmp//%s.bmp", filePath);
+		file = fopen(filePath2, "r");
+
+		if(!file){
+			printf("Invalid path!\n"); getchar();
+			exit(1);
+		}else{
+			sprintf(filePath, "%s", filePath2);
+		}
 	}
 
 	fclose(file);
-	_splitpath(filePath, NULL, NULL, fileName, fileExt);
-
-	if(strcmp(fileExt, ".bmp") != 0){
-		printf("%s is not a valid BMP file!\n", fileName); getchar();
-		exit(1);
-	}
 
 
 	//Start GLUT Window, hide console
@@ -437,7 +441,7 @@ int main(int argc, char **argv)
 	//Load BMP File
 	bitmapData = LoadBitmapFile(filePath,&bitmapInfoHeader);
 	if(bitmapData == NULL){
-		perror("Failed to load BMP file!\n");
+		perror("Failed to load BMP file!\n"); getchar();
 		exit(11);
 	}
 
