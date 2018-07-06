@@ -12,5 +12,7 @@ Roadmap:
 1.0: Stereoskopie
 
 //todo
-fix height for boxes
+fix height for boxes - fuck the boxes?
 bl_character
+Kollisionsboxen der Hexagons
+Minimap
