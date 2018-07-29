@@ -14,10 +14,14 @@
 
 #include "bl_bmp.h"
 #include "bl_camera.h"
+#include "bl_character.h"
 
 #define MVERSION 0
 #define SVERSION 7
 
 #define FILENAMEBUFFER 100
+
+int main(int argc, char **argv);
+void printInput();
 
 #endif

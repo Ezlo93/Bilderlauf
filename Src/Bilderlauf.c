@@ -4,6 +4,7 @@
 #include "debug.h"
 
 #define ESC        27
+#define SPACE	   32
 #define CAMERAMAX 2
 
 enum {X=0, Y=1, Z=2, W=3};
@@ -13,6 +14,8 @@ enum {DRAW_HEXAGON=0,DRAW_CUBE=1};
 
 int drawMode = DRAW_HEXAGON;
 GLfloat frameTime = 0, oldFrameTime = 0, deltaTime = 0;
+int input[5];
+
 
 //Window Settings
 float    eyez=10., diag=0., viewScale=1., angle[3]={0.,0.,0.};
@@ -22,7 +25,7 @@ GLdouble nah=1., fern=10000.;
 char *title;
 
 //Hexagon Variables
-float bl_hexasize = 1.f, bl_hexaheight, bl_hexawidth, bl_hexavert;
+float bl_hexasize = 2.f, bl_hexaheight, bl_hexawidth, bl_hexavert;
 GLfloat xOffset = .0, yOffset = .0;
 GLfloat hexa_vertices[12][3];
 GLfloat hexa_vertices_rotated[12][3];
@@ -37,8 +40,11 @@ float bl_cubesize = 1.f;
 GLfloat deltaAngle = .0f;
 int xOrigin = -1;
 
+//Player
+bl_Character* bl_player;
+
 //Camera
-int cameraCurrent = 0;
+int cameraCurrent = 1;
 bl_Camera *cameras[CAMERAMAX];
 float rotation_speed = M_PI/180*0.1f;
 int cameraReverseX = 1, cameraReverseY = -1;
@@ -80,8 +86,8 @@ void createHexagonVertices(float size, float height){
 	}
 
 	bl_hexaheight = size*2; 
-	bl_hexawidth = sqrt(3.f)/2* bl_hexaheight;
-	bl_hexavert = height*2 * 3/4;
+	bl_hexawidth = sqrt(3.f) * size;
+	bl_hexavert = bl_hexaheight * 3/4;
 }
 
 //Draws a hexagon at x,y position
@@ -307,40 +313,40 @@ void key(unsigned char key, int x, int y)
 	/*Menue und Eingabe-Behandlung:*/
 { 
 	switch (key)
-	{ case ESC: exit(0); break;
-	case 'q': cameraCurrent = (cameraCurrent + 1) % CAMERAMAX; break;
-	case 'r': drawMode = !drawMode; calculateTopCameraPosition();break;
+	{ 
+		case ESC: exit(0); break;
+		case 'w': input[0] = 1; break;
+		case 's': input[1] = 1; break;
+		case 'a': input[2] = 1; break;
+		case 'd': input[3] = 1; break;
+		case SPACE: input[4] = 1; break;
 
 #if DEBUG > 0
+	case 'q': cameraCurrent = (cameraCurrent + 1) % CAMERAMAX; break;
+	case 'r': drawMode = !drawMode; calculateTopCameraPosition();break;
 	case 'p': bl_CameraInfo(cameras[cameraCurrent]);break;
-	case 'w': cameras[cameraCurrent]->Position.X += 1;break;
-    case 's': cameras[cameraCurrent]->Position.X -= 1;break;
-	case 'd': cameras[cameraCurrent]->Position.Z += 1;break;
-	case 'a': cameras[cameraCurrent]->Position.Z -= 1;break;
-	case 'g': cameras[cameraCurrent]->Position.Y += 1;break;
-    case 'f': cameras[cameraCurrent]->Position.Y -= 1;break;
 #endif
 
 	}
-	glutPostRedisplay();
+	
 	return;
 }
 
-void idle(void){
-	
+
+void releaseKey(unsigned char key, int x, int y){
+
+	switch(key){
+		case 'w': input[0] = 0; break;
+		case 's': input[1] = 0; break;
+		case 'a': input[2] = 0; break;
+		case 'd': input[3] = 0; break;
+		case SPACE: input[4] = 0; break;
+	}
+#if DEBUG > 0
+	printInput();
+#endif
 }
 
-
-void processSpecialKeys(int key, int xx, int yy) {
-
-}
-
-
-
-void timer(int a) {
-    glutPostRedisplay();
-    glutTimerFunc(1000/120, timer, 0);
-}
 
 
 
@@ -369,7 +375,21 @@ void mouseMove(int x, int y){
 
 }
 
+void printInput(){
+	printf("W=%d\n", input[0]);
+	printf("S=%d\n", input[1]);
+	printf("A=%d\n", input[2]);
+	printf("D=%d\n", input[3]);
+	printf("Space=%d\n", input[4]);
+}
 
+
+void timer(int a) {
+	//bl_UpdateCharacter(&input, deltaTime);
+	bl_UpdateCharacter(bl_player, &input, 1000/120.f);
+    glutPostRedisplay();
+    glutTimerFunc(1000/120, timer, 0);
+}
 
 
 /*************************************************************************/
@@ -463,10 +483,12 @@ int main(int argc, char **argv)
 
 	createHexagonVertices(bl_hexasize, 1.f);
 
-
 	//Basecamera Position
 	cameras[0] = CreateCamera(calculateTopCameraPosition(), BL_CAM_TOP);
 	cameras[1] = CreateCamera(CreateCameraPosition(0,2,0), BL_CAM_FPP);
+
+	bl_player =	bl_CreateCharacter(0,0,2, cameras[1]);
+
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE |  GLUT_DEPTH);
@@ -480,20 +502,17 @@ int main(int argc, char **argv)
 
 	glutIgnoreKeyRepeat(1);
 	glutDisplayFunc(draw);
-	glutKeyboardFunc(key); 
-	glutSpecialFunc(processSpecialKeys);
 	glutMotionFunc(mouseMove);
 	glutPassiveMotionFunc(mouseMove);
-	glutIdleFunc(idle);
 
 	glutSetCursor(GLUT_CURSOR_NONE);
-	/*
-	glutSpecialFunc(pressKey);
+	
 
+	glutKeyboardFunc(key); 
 	// here are the new entries
 	glutIgnoreKeyRepeat(1);
-	glutSpecialUpFunc(releaseKey);
-	*/
+	glutKeyboardUpFunc(releaseKey);
+	
 	timer(1);
 	glutMainLoop();
 	return 0;
