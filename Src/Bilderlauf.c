@@ -5,6 +5,7 @@
 
 #define ESC        27
 #define SPACE	   32
+
 #define CAMERAMAX 2
 
 enum {X=0, Y=1, Z=2, W=3};
@@ -14,7 +15,7 @@ enum {DRAW_HEXAGON=0,DRAW_CUBE=1};
 
 int drawMode = DRAW_HEXAGON;
 GLfloat frameTime = 0, oldFrameTime = 0, deltaTime = 0;
-int input[5];
+int input[6];
 
 
 //Window Settings
@@ -254,7 +255,7 @@ bl_CameraPosition calculateTopCameraPosition(){
 
 	pos.X = (bl_PictureData->bmpWidth * w + bl_PictureData->bmpWidth * xOffset)/2;
 	pos.Y = (bl_PictureData->bmpHeight * w + bl_PictureData->bmpHeight * yOffset)/2;
-	pos.Z = 5;
+	pos.Z = 20;
 
 	return pos;
 }
@@ -327,13 +328,12 @@ void key(unsigned char key, int x, int y)
 		case SPACE: input[4] = 1; break;
 
 #if DEBUG > 0
-	case 'q': cameraCurrent = (cameraCurrent + 1) % CAMERAMAX; break;
-	case 'r': drawMode = !drawMode; calculateTopCameraPosition();break;
+	case 'r': drawMode = !drawMode; calculateTopCameraPosition(); cameraCurrent = (cameraCurrent + 1) % CAMERAMAX;break;
 	case 'p': bl_CameraInfo(cameras[cameraCurrent]);break;
 #endif
 
 	}
-	
+
 	return;
 }
 
@@ -383,7 +383,7 @@ void mouseMove(int x, int y){
 //Update Loop
 void timer(int a) {
 	//bl_UpdateCharacter(&input, deltaTime);
-	bl_UpdateCharacter(bl_player, &input, 1/120.f);
+	bl_UpdateCharacter(bl_player, &input, 1/120.f, bl_PictureData);
     glutPostRedisplay();
     glutTimerFunc(1000/120, timer, 0);
 }
@@ -422,7 +422,7 @@ int main(int argc, char **argv)
 		//DEBUG
 #if DEBUG > 0
 		if( strcmp(filePath, "-") == 0)
-			strcpy(filePath, "C://VSProjects//depp4.bmp");
+			strcpy(filePath, "C://VSProjects//test.bmp");
 
 		printf("\n");
 #endif
@@ -486,7 +486,7 @@ int main(int argc, char **argv)
 
 
 	//Character init
-	bl_player =	bl_CreateCharacter(0,0,3, cameras[1]);
+	bl_player =	bl_CreateCharacter(0,0,3.5f, cameras[1]);
 
 	//Glut Init
 	glutInit(&argc, argv);
