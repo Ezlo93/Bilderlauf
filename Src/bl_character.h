@@ -2,6 +2,7 @@
 #define BL_CHARACTER_H
 
 #include "bl_camera.h"
+#include <math.h>
 
 #define BL_CHARACTER_SPEED 2.5f
 

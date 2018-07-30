@@ -56,6 +56,9 @@ unsigned char *bitmapData;
 bl_BMPData *bl_PictureData;
 
 
+//Vertex calculations
+
+
 //Calculates vertices/properties of a hexagon 
 void createHexagonVertices(float size, float height){
 
@@ -306,11 +309,13 @@ void draw(void)
 
 }
 
-/*Eingabe-Behandlung:*/
-/*************************************************************************/
+
+
+//Input
+
+
 void key(unsigned char key, int x, int y)
-	/*************************************************************************/
-	/*Menue und Eingabe-Behandlung:*/
+
 { 
 	switch (key)
 	{ 
@@ -342,9 +347,7 @@ void releaseKey(unsigned char key, int x, int y){
 		case 'd': input[3] = 0; break;
 		case SPACE: input[4] = 0; break;
 	}
-#if DEBUG > 0
-	printInput();
-#endif
+
 }
 
 
@@ -375,18 +378,12 @@ void mouseMove(int x, int y){
 
 }
 
-void printInput(){
-	printf("W=%d\n", input[0]);
-	printf("S=%d\n", input[1]);
-	printf("A=%d\n", input[2]);
-	printf("D=%d\n", input[3]);
-	printf("Space=%d\n", input[4]);
-}
 
 
+//Update Loop
 void timer(int a) {
 	//bl_UpdateCharacter(&input, deltaTime);
-	bl_UpdateCharacter(bl_player, &input, 1000/120.f);
+	bl_UpdateCharacter(bl_player, &input, 1/120.f);
     glutPostRedisplay();
     glutTimerFunc(1000/120, timer, 0);
 }
@@ -399,8 +396,8 @@ int main(int argc, char **argv)
 
 	char prgNameBuffer[50];
 	char filePath[FILENAMEBUFFER], filePath2[FILENAMEBUFFER];
-	char fileName[64];
-	char fileExt[8];
+	//char fileName[64];
+	//char fileExt[8];
 	FILE *file;
 	clock_t cl_begin, cl_end;
 
@@ -487,9 +484,11 @@ int main(int argc, char **argv)
 	cameras[0] = CreateCamera(calculateTopCameraPosition(), BL_CAM_TOP);
 	cameras[1] = CreateCamera(CreateCameraPosition(0,2,0), BL_CAM_FPP);
 
-	bl_player =	bl_CreateCharacter(0,0,2, cameras[1]);
 
+	//Character init
+	bl_player =	bl_CreateCharacter(0,0,3, cameras[1]);
 
+	//Glut Init
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE |  GLUT_DEPTH);
 
@@ -500,19 +499,19 @@ int main(int argc, char **argv)
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0,0.75f,0.75f,1.f);
 
-	glutIgnoreKeyRepeat(1);
 	glutDisplayFunc(draw);
+
+	//Glut input
 	glutMotionFunc(mouseMove);
 	glutPassiveMotionFunc(mouseMove);
 
 	glutSetCursor(GLUT_CURSOR_NONE);
 	
-
 	glutKeyboardFunc(key); 
-	// here are the new entries
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardUpFunc(releaseKey);
 	
+	//
 	timer(1);
 	glutMainLoop();
 	return 0;

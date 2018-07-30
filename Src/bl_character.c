@@ -8,21 +8,39 @@ bl_Character* bl_CreateCharacter(float _X, float _Y, float _height, bl_Camera* _
 	c->y = _Y;
 	c->height = _height;
 	c->camera = _camera;
-
+	c->camera->Position.Y = c->height;
+	bl_CameraUpdate(c->camera);
 	return c;
 }
 
 
-void bl_UpdateCharacter(bl_Character* _char, int** _input, float _deltaTime){
-	float bl_movex, bl_movey, bl_movez;
+void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime){
+	double bl_movex, bl_movey, bl_movez;
 
-	bl_movex = BL_CHARACTER_SPEED * (_input[0]-_input[1]);
-	bl_movey = BL_CHARACTER_SPEED * (_input[2]-_input[3]);
+	//ADD COLLISION
+	//YAW = Direction
 
-	_char->x = _char->x + bl_movex * _deltaTime;
-	_char->y = _char->y + bl_movey * _deltaTime;
+	if(_input[0] == 1){
 
-	_char->camera->Position.X = _char->x;
-	_char->camera->Position.Y = _char->y;
-	bl_CameraUpdate(_char->camera);
+		bl_movex = cos(_char->camera->yaw) * BL_CHARACTER_SPEED;
+		bl_movey = -sin(_char->camera->yaw) * BL_CHARACTER_SPEED;
+
+		_char->x = _char->x + bl_movex * _deltaTime;
+		_char->y = _char->y - bl_movey * _deltaTime;
+
+
+
+
+
+
+		
+
+	}
+		//ADD JUMP
+		bl_movez = 0;
+
+
+		_char->camera->Position.X = _char->x;
+		_char->camera->Position.Z = _char->y;
+		_char->camera->Position.Y = _char->height + bl_movez;
 }
