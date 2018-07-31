@@ -383,7 +383,7 @@ void mouseMove(int x, int y){
 //Update Loop
 void timer(int a) {
 	//bl_UpdateCharacter(&input, deltaTime);
-	bl_UpdateCharacter(bl_player, &input, 1/120.f, bl_PictureData);
+	bl_UpdateCharacter(bl_player, &input, 1/120.f, bl_PictureData, bl_hexasize, bl_hexawidth, bl_hexaheight);
     glutPostRedisplay();
     glutTimerFunc(1000/120, timer, 0);
 }
@@ -486,7 +486,7 @@ int main(int argc, char **argv)
 
 
 	//Character init
-	bl_player =	bl_CreateCharacter(0,0,3.5f, cameras[1]);
+	bl_player =	bl_CreateCharacter(0,0,BL_CHARACTER_HEIGHT, cameras[1]);
 
 	//Glut Init
 	glutInit(&argc, argv);
