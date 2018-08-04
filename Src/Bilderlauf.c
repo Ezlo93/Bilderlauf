@@ -27,7 +27,7 @@ char *title;
 
 //Hexagon Variables
 float bl_hexasize = 2.f, bl_hexaheight, bl_hexawidth, bl_hexavert;
-GLfloat xOffset = .0, yOffset = .0;
+GLfloat xOffset = 0.0, yOffset = 0.0;
 GLfloat hexa_vertices[12][3];
 GLfloat hexa_vertices_rotated[12][3];
 GLfloat hexa_vertices_scaled[12][3];
@@ -382,8 +382,7 @@ void mouseMove(int x, int y){
 
 //Update Loop
 void timer(int a) {
-	//bl_UpdateCharacter(&input, deltaTime);
-	bl_UpdateCharacter(bl_player, &input, 1/120.f, bl_PictureData, bl_hexasize, bl_hexawidth, bl_hexaheight);
+	bl_UpdateCharacter(bl_player, &input, 1/120.f, bl_PictureData, bl_hexasize);
     glutPostRedisplay();
     glutTimerFunc(1000/120, timer, 0);
 }
