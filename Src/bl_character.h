@@ -18,15 +18,21 @@ typedef struct{
 	bl_Camera *camera;
 } bl_Character;
 
+typedef union{
+	int pInt;
+	float pFloat;
+}bl_uif;
+
 typedef struct{
-	float x;
-	float y;
+	bl_uif x;
+	bl_uif y;
 }bl_Point;
 
-bl_Character* bl_CreateCharacter(float _X, float _Y, float _height, bl_Camera* _camera);
-void bl_UpdateCharacter(bl_Character* _char, int** _input, float _deltaTime, bl_BMPData *data,
-						float _hexasize);
+bl_Character* bl_CreateCharacter(float _X, float _Y, float _Z, float _height, bl_Camera* _camera);
+void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_BMPData *_data,
+	float _hexasize);
 int round(double number);
 int pointHexagonCollision(float _hexacenterx, float _hexacentery, float _size, float _pointx, float _pointy);
+bl_Point convertPosition(bl_Character *_char, int _pos);
 
 #endif

@@ -66,6 +66,11 @@ void createHexagonVertices(float size, float height){
 	int i;
 	double angle_rad;
 
+	//reduce size temporarily to draw slightly smaller hexagons
+	//in order to create a little space between them so that the
+	//camera can't glitch into them
+	size -= 0.05f;
+
 	for(i = 0; i < 6; i++){
 		angle_rad = M_PI / 180 * (60*i + 30);
 
@@ -88,6 +93,8 @@ void createHexagonVertices(float size, float height){
 		hexa_vertices_rotated[i][2] = hexa_vertices[i][1];
 		hexa_vertices_rotated[i+6][2] = hexa_vertices[i+6][1];
 	}
+
+	size += 0.05f;
 
 	bl_hexaheight = size*2; 
 	bl_hexawidth = sqrt(3.f) * size;
@@ -139,6 +146,7 @@ void drawHexagon(int x, int y, bl_BMPData *data)
 
 	//Translation & Color of Hexagon
 	glTranslatef(transX, transY, transZ);
+
 	glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
 
 	//Change height of hexagon
@@ -395,8 +403,6 @@ int main(int argc, char **argv)
 
 	char prgNameBuffer[50];
 	char filePath[FILENAMEBUFFER], filePath2[FILENAMEBUFFER];
-	//char fileName[64];
-	//char fileExt[8];
 	FILE *file;
 	clock_t cl_begin, cl_end;
 
@@ -485,7 +491,7 @@ int main(int argc, char **argv)
 
 
 	//Character init
-	bl_player =	bl_CreateCharacter(0,0,BL_CHARACTER_HEIGHT, cameras[1]);
+	bl_player =	bl_CreateCharacter(0,0,bl_PictureData->bmpData[0].Height, BL_CHARACTER_HEIGHT , cameras[1]);
 
 	//Glut Init
 	glutInit(&argc, argv);
