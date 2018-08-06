@@ -5,7 +5,7 @@
 #include "bl_bmp.h"
 #include <math.h>
 
-#define BL_CHARACTER_SPEED 6.5f 
+#define BL_CHARACTER_SPEED 8.0f 
 #define BL_CHARACTER_HEIGHT 3.5f
 #define BL_CHARACTER_CLIMB_THRESHOLD .8f
 #define BL_CHARACTER_JUMP_VELOCITY 7.7f

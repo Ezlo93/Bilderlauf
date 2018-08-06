@@ -34,5 +34,7 @@ void releaseKey(unsigned char key, int x, int y);
 void mouseMove(int x, int y);
 
 void timer(int a);
+void ExtractFrustum();
+int SphereInFrustum( float x, float y, float z, float radius );
 
 #endif
