@@ -6,13 +6,15 @@ bl_Character* bl_CreateCharacter(float _X, float _Y, float _Z, float _height, bl
 
 	c->x = _X;
 	c->y = _Y;
+	c->z = _Z;
 	c->positionOnGridX = 0;
 	c->positionOnGridY = 0;
 
 	c->height = _height;
 	c->inAir = 0;
+	c->airTime = 0;
 	c->camera = _camera;
-	c->camera->Position.Y = c->height+_Z;
+	c->camera->Position.Y = c->height+c->z;
 	bl_CameraUpdate(c->camera);
 	return c;
 }
@@ -22,191 +24,191 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 	float _hexasize){
 
 		double yaw_inc = 0;
-		int i, inputcounter = 0, keepmoving = 1, collision = 0;
+		int i,  keepmoving = 1, collision = 0, movement = 0;
 		bl_Point gridPos, currentPos, intendedMove, centerPos;
-		float _hexawidth, _hexaheight, bl_movex, bl_movey, bl_movez,char_actual_speed = BL_CHARACTER_SPEED;
+		float _hexawidth, _hexaheight, bl_movex, bl_movey, bl_movez,char_actual_speed;
 
 		_hexaheight = _hexasize*2; 
 		_hexawidth = (float)(sqrt(3.f)) * _hexasize;
 
 
-		//YAW = Direction
-
+		//check if wasd movement
 		for(i = 0; i < 4; i++ ){
 			if(_input[i] == 1){
-				inputcounter++;
+				movement = 1; break;
 			}
 		}
-		if(inputcounter == 0){ return;}
+
+		char_actual_speed = _input[5]? BL_CHARACTER_SPEED * 2 : BL_CHARACTER_SPEED;
 
 		//ADD JUMP
-		bl_movez = 0;
 
-		if(_input[4] == 1 || _char->inAir == 1){
+		if(_input[4] == 1 && !_char->inAir){
 
-			if(_char->inAir == 0){
 				_char->inAir = 1;
+				_char->airTime = 0;
+				_char->zVelocity = _input[5] ? BL_CHARACTER_JUMP_VELOCITY * 1.5f : BL_CHARACTER_JUMP_VELOCITY;
+				_char->zOrigin = _char->z;
 
-			}else{
+		}
 
-
-			}
-
+		if(_char->inAir){
+			_char->airTime += _deltaTime;
+			bl_movez = (_char->zVelocity * _char->airTime) - (GRAVITY/2.f * _char->airTime * _char->airTime); 
 		}
 
 		//W A S D movement
 
 		//W + strafe A D
 
-		if(_input[0] == 1){
-			if(_input[3] == 1){			//+ right strafe
-				yaw_inc = M_PI*0.25f;
-			}else if(_input[2] == 1){   //+ left strafe
-				yaw_inc = M_PI*-0.25f;
-			}else if(_input[1] == 1){   //+ s = stop
-				yaw_inc = 0;
-				keepmoving = 0;
+		if(movement){
+			if(_input[0] == 1){
+				if(_input[3] == 1){			//+ right strafe
+					yaw_inc = M_PI*0.25f;
+				}else if(_input[2] == 1){   //+ left strafe
+					yaw_inc = M_PI*-0.25f;
+				}else if(_input[1] == 1){   //+ s = stop
+					yaw_inc = 0;
+					keepmoving = 0;
+				}
+				if(_input[3] == _input[2]){ //normal or both strafes
+					yaw_inc = 0;
+				}
+			}else if(_input[1] == 1){
+
+				//S + strafe A D
+
+				if(_input[3] == 1){			//+ right strafe
+					yaw_inc = M_PI*0.75f;
+				}else if(_input[2] == 1){   //+ left strafe
+					yaw_inc = M_PI*1.25f;
+				}else if(_input[0] == 1){   //+ s = stop
+					yaw_inc = 0;
+					keepmoving = 0;
+				}
+				if(_input[3] == _input[2]){ //normal or both strafes
+					yaw_inc = M_PI;
+				}
+			}else if(_input[2] == 1){
+				//strafe left
+
+				yaw_inc += M_PI * 1.5f;
+			}else if(_input[3] == 1){
+				//strafe right
+
+				yaw_inc += M_PI * 0.5f;
 			}
-			if(_input[3] == _input[2]){ //normal or both strafes
-				yaw_inc = 0;
+
+
+			//movement equation
+			bl_movex = (float)(cos(_char->camera->yaw + yaw_inc)) * char_actual_speed * keepmoving * _deltaTime;
+			bl_movey = (float)(-sin(_char->camera->yaw + yaw_inc)) * char_actual_speed * keepmoving * _deltaTime;
+
+
+			//check collision
+
+
+			collision = 0;
+			intendedMove.x.pFloat = _char->x + bl_movex;
+			intendedMove.y.pFloat = _char->y - bl_movey;
+
+			currentPos.x.pInt = _char->positionOnGridX;
+			currentPos.y.pInt = _char->positionOnGridY;
+
+			//check current hexagon plus 6 neighbors for collision
+			for(i= 0; i < 7; i++){
+
+				//difference between odd/even rows
+
+				currentPos = convertPosition(_char, i);
+
+				//even
+				if(currentPos.y.pInt % 2 == 0){
+
+					centerPos.x.pFloat = currentPos.x.pInt * _hexawidth;
+					centerPos.y.pFloat = currentPos.y.pInt * (3.f/4 * _hexaheight);
+
+
+					//odd
+				}else{
+
+					centerPos.x.pFloat = (currentPos.x.pInt * _hexawidth) - (_hexawidth/2);
+					centerPos.y.pFloat = currentPos.y.pInt * (3.f/4 * _hexaheight);
+
+				}
+
+				if(pointHexagonCollision(centerPos.x.pFloat, centerPos.y.pFloat, _hexasize, intendedMove.x.pFloat, intendedMove.y.pFloat)){
+					collision = i;
+					break;
+				}
+
 			}
-		}else if(_input[1] == 1){
 
-			//S + strafe A D
-
-			if(_input[3] == 1){			//+ right strafe
-				yaw_inc = M_PI*0.75f;
-			}else if(_input[2] == 1){   //+ left strafe
-				yaw_inc = M_PI*1.25f;
-			}else if(_input[0] == 1){   //+ s = stop
-				yaw_inc = 0;
-				keepmoving = 0;
-			}
-			if(_input[3] == _input[2]){ //normal or both strafes
-				yaw_inc = M_PI;
-			}
-		}else if(_input[2] == 1){
-			//strafe left
-
-			yaw_inc += M_PI * 1.5f;
-		}else if(_input[3] == 1){
-			//strafe right
-
-			yaw_inc += M_PI * 0.5f;
-		}
-
-
-		//movement equation
-		bl_movex = (float)(cos(_char->camera->yaw + yaw_inc)) * char_actual_speed * keepmoving * _deltaTime;
-		bl_movey = (float)(-sin(_char->camera->yaw + yaw_inc)) * char_actual_speed * keepmoving * _deltaTime;
-
-
-		//check collision
-
-		/*Test
-		puts("Test");
-
-		_char->positionOnGridX = 2;
-		_char->positionOnGridY = 2;
-
-		puts("Für 2|2:");
-
-		for(i = 0; i < 7; i++){
-		currentPos = convertPosition(_char, i);
-		printf("i=%d: %d %d\n", i, currentPos.x.pInt, currentPos.y.pInt);
-		}
-
-		_char->positionOnGridX = 3;
-		_char->positionOnGridY = 3;
-
-		puts("Für 3|3:");
-
-		for(i = 0; i < 7; i++){
-		currentPos = convertPosition(_char, i);
-		printf("i=%d: %d %d\n", i, currentPos.x.pInt, currentPos.y.pInt);
-		}
-
-		*/
-
-		collision = 0;
-		intendedMove.x.pFloat = _char->x + bl_movex;
-		intendedMove.y.pFloat = _char->y - bl_movey;
-
-		currentPos.x.pInt = _char->positionOnGridX;
-		currentPos.y.pInt = _char->positionOnGridY;
-
-		//check current hexagon plus 6 neighbors for collision
-		for(i= 0; i < 7; i++){
-
-			//difference between odd/even rows
-
-			currentPos = convertPosition(_char, i);
-
+			//translate collision int back to x,y position on grid
 			//even
-			if(currentPos.y.pInt % 2 == 0){
 
-				centerPos.x.pFloat = currentPos.x.pInt * _hexawidth;
-				centerPos.y.pFloat = currentPos.y.pInt * (3.f/4 * _hexaheight);
+			gridPos = convertPosition(_char, collision);
 
 
-				//odd
-			}else{
+			//only when intended move puts character on neighbor hexagon
+			if(collision != 3){
 
-				centerPos.x.pFloat = (currentPos.x.pInt * _hexawidth) - (_hexawidth/2);
-				centerPos.y.pFloat = currentPos.y.pInt * (3.f/4 * _hexaheight);
+				//check height difference of hexagons and out of bounds
 
+				if((_data->bmpData[_data->bmpWidth*gridPos.y.pInt+gridPos.x.pInt].Height - 
+					_char->z) > (_char->inAir ? 0 : BL_CHARACTER_CLIMB_THRESHOLD)
+					||
+					gridPos.x.pInt < 0
+					||
+					gridPos.y.pInt < 0
+					||
+					gridPos.x.pInt > _data->bmpWidth-1
+					||
+					gridPos.y.pInt > _data->bmpHeight-1
+					){
+
+						collision=-1;
+						//
+
+				}
 			}
 
-			if(pointHexagonCollision(centerPos.x.pFloat, centerPos.y.pFloat, _hexasize, intendedMove.x.pFloat, intendedMove.y.pFloat)){
-				collision = i;
-				break;
-			}
-
-		}
-
-		//translate collision int back to x,y position on grid
-		//even
-
-		gridPos = convertPosition(_char, collision);
+			if(collision != -1){
+				_char->positionOnGridX = gridPos.x.pInt;
+				_char->positionOnGridY = gridPos.y.pInt;
 
 
-		//only when intended move puts character on neighbor hexagon
-		if(collision != 3){
-
-			//check height difference of hexagons and out of bounds
-			if((_data->bmpData[_data->bmpWidth*gridPos.y.pInt+gridPos.x.pInt].Height - 
-				_data->bmpData[_data->bmpWidth*_char->positionOnGridY+_char->positionOnGridX].Height) > BL_CHARACTER_CLIMB_THRESHOLD
-				||
-				gridPos.x.pInt < 0
-				||
-				gridPos.y.pInt < 0
-				||
-				gridPos.x.pInt > _data->bmpWidth-1
-				||
-				gridPos.y.pInt > _data->bmpHeight-1
-				){
-
-					return;
-					//
-
+				//set position
+				_char->x = intendedMove.x.pFloat;
+				_char->y = intendedMove.y.pFloat;
 			}
 		}
 
+		//add jump value
+		if(_char->inAir){
+			_char->z = _char->zOrigin+bl_movez;
+		}
 
-		_char->positionOnGridX = gridPos.x.pInt;
-		_char->positionOnGridY = gridPos.y.pInt;
+		//check if character is on the ground
+		if(_char->z < _data->bmpData[_data->bmpWidth*_char->positionOnGridY+_char->positionOnGridX].Height){
+			_char->inAir = 0;
+			_char->z = _data->bmpData[_data->bmpWidth*_char->positionOnGridY+_char->positionOnGridX].Height;
+		}
 
+		//check if player moved from a higher to a lower hexagon / is falling
+		if(!_char->inAir && _char->z > _data->bmpData[_data->bmpWidth*_char->positionOnGridY+_char->positionOnGridX].Height){
+			
+				_char->inAir = 1;
+				_char->airTime = 0;
+				_char->zVelocity = 0;
+				_char->zOrigin = _char->z;
+		}
 
-		//set position
-		_char->x = intendedMove.x.pFloat;
-		_char->y = intendedMove.y.pFloat;
 
 		//update camera
 		_char->camera->Position.X = _char->x;
 		_char->camera->Position.Z = _char->y;
-
-		//BANDAID -> char pos snaps to height of hexagon
-		_char->camera->Position.Y = _char->height + _data->bmpData[_data->bmpWidth*_char->positionOnGridY+_char->positionOnGridX].Height + bl_movez;
+		_char->camera->Position.Y = _char->z + _char->height;
 
 }
 

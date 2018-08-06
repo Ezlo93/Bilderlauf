@@ -1,14 +1,16 @@
-﻿Der Buildvorgang wurde am 06.08.2018 00:58:14 gestartet.
+﻿Der Buildvorgang wurde am 06.08.2018 16:40:08 gestartet.
      1>Projekt "C:\VSProjects\Bilderlauf\Debug\Debug.vcxproj" auf Knoten "2", build Ziel(e).
      1>InitializeBuildStatus:
          "..\tmp\Debug.unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\Src /I..\..\_Data /I..\..\_Libs /I..\..\_Src /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"..\tmp\\" /Fd"..\tmp\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt ..\Src\Bilderlauf.c ..\Src\bl_bmp.c ..\Src\bl_character.c
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\Src /I..\..\_Data /I..\..\_Libs /I..\..\_Src /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"..\tmp\\" /Fd"..\tmp\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt ..\Src\Bilderlauf.c ..\Src\bl_bmp.c ..\Src\bl_camera.c ..\Src\bl_character.c
          bl_character.c
+         bl_camera.c
+     1>c:\vsprojects\bilderlauf\src\bl_camera.c(77): warning C4244: '=': Konvertierung von 'double' in 'float', möglicher Datenverlust
          bl_bmp.c
          Bilderlauf.c
-     1>c:\vsprojects\bilderlauf\src\bilderlauf.c(393): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[6]' unterschiedlich
-     1>c:\vsprojects\bilderlauf\src\bilderlauf.c(393): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
+     1>c:\vsprojects\bilderlauf\src\bilderlauf.c(404): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[6]' unterschiedlich
+     1>c:\vsprojects\bilderlauf\src\bilderlauf.c(404): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
          Code wird generiert...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\Exc\Bilderlauf.exe" /NOLOGO /LIBPATH:..\..\_Data /LIBPATH:..\..\_Libs /LIBPATH:..\..\_Src /LIBPATH:..\..\_Dat OpenGL32.Lib GLU32.Lib GLUT32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"..\tmp\Bilderlauf.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\VSProjects\Bilderlauf\Exc\Bilderlauf.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\Exc\Bilderlauf.lib" /MACHINE:X86 ..\tmp\Bilderlauf.obj
@@ -26,4 +28,4 @@
 
 Das Erstellen war erfolgreich.
 
-Verstrichene Zeit 00:00:01.18
+Verstrichene Zeit 00:00:01.39

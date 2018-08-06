@@ -7,6 +7,7 @@
 #define SPACE	   32
 
 #define CAMERAMAX 2
+#define DRAWDISTANCE 24
 
 enum {X=0, Y=1, Z=2, W=3};
 enum {DRAW_HEXAGON=0,DRAW_CUBE=1};
@@ -304,6 +305,13 @@ void draw(void)
 
 	for(i = 0; i < bl_PictureData->bmpHeight; i++){
 		for(j = 0; j < bl_PictureData->bmpWidth; j++){
+
+			//draw distance
+			if(abs(bl_player->positionOnGridX-j) > DRAWDISTANCE || abs(bl_player->positionOnGridY-i) > DRAWDISTANCE){
+				continue;
+			}
+
+
 			glPushMatrix();
 			if(drawMode == DRAW_HEXAGON){
 				drawHexagon(j,i, bl_PictureData);
@@ -334,10 +342,12 @@ void key(unsigned char key, int x, int y)
 		case 'a': input[2] = 1; break;
 		case 'd': input[3] = 1; break;
 		case SPACE: input[4] = 1; break;
+		case 'q': input[5] = 1; break;
 
 #if DEBUG > 0
 	case 'r': drawMode = !drawMode; calculateTopCameraPosition(); cameraCurrent = (cameraCurrent + 1) % CAMERAMAX;break;
-	case 'p': bl_CameraInfo(cameras[cameraCurrent]);break;
+	case 'p': bl_CameraInfo(cameras[cameraCurrent]);
+		printf("Player @%d,%d\n", bl_player->positionOnGridX, bl_player->positionOnGridY); break;
 #endif
 
 	}
@@ -354,6 +364,7 @@ void releaseKey(unsigned char key, int x, int y){
 		case 'a': input[2] = 0; break;
 		case 'd': input[3] = 0; break;
 		case SPACE: input[4] = 0; break;
+		case 'q': input[5] = 0; break;
 	}
 
 }

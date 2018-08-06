@@ -17,7 +17,7 @@
 #include "bl_character.h"
 
 #define MVERSION 0
-#define SVERSION 8
+#define SVERSION 9
 
 #define FILENAMEBUFFER 100
 

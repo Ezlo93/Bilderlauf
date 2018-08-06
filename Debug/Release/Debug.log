@@ -1,24 +1,24 @@
-﻿Der Buildvorgang wurde am 30.07.2018 18:28:56 gestartet.
+﻿Der Buildvorgang wurde am 06.08.2018 16:39:57 gestartet.
      1>Projekt "C:\VSProjects\Bilderlauf\Debug\Debug.vcxproj" auf Knoten "2", build Ziel(e).
      1>InitializeBuildStatus:
          "Release\Debug.unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt ..\Src\Bilderlauf.c ..\Src\bl_bmp.c ..\Src\bl_camera.c ..\Src\bl_character.c
          Bilderlauf.c
-     1>..\Src\Bilderlauf.c(386): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int **' und 'int (*)[5]' unterschiedlich
-     1>..\Src\Bilderlauf.c(386): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
-     1>..\Src\Bilderlauf.c(406): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(404): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[6]' unterschiedlich
+     1>..\Src\Bilderlauf.c(404): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
+     1>..\Src\Bilderlauf.c(422): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371): Siehe Deklaration von 'sprintf'
-     1>..\Src\Bilderlauf.c(411): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-     1>..\Src\Bilderlauf.c(420): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(427): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(436): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string.h(197): Siehe Deklaration von 'strtok'
-     1>..\Src\Bilderlauf.c(435): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(451): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234): Siehe Deklaration von 'fopen'
-     1>..\Src\Bilderlauf.c(439): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(455): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371): Siehe Deklaration von 'sprintf'
-     1>..\Src\Bilderlauf.c(440): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(456): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234): Siehe Deklaration von 'fopen'
-     1>..\Src\Bilderlauf.c(446): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(462): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371): Siehe Deklaration von 'sprintf'
          bl_bmp.c
      1>..\Src\bl_bmp.c(122): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
@@ -26,9 +26,6 @@
          bl_camera.c
      1>..\Src\bl_camera.c(77): warning C4244: '=': Konvertierung von 'double' in 'float', möglicher Datenverlust
          bl_character.c
-     1>..\Src\bl_character.c(17): warning C4028: Formaler Parameter '2' unterscheidet sich von der Deklaration
-     1>..\Src\bl_character.c(28): warning C4244: '=': Konvertierung von 'double' in 'float', möglicher Datenverlust
-     1>..\Src\bl_character.c(29): warning C4244: '=': Konvertierung von 'double' in 'float', möglicher Datenverlust
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\VSProjects\Bilderlauf\Debug\Release\Debug.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Release\Debug.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\VSProjects\Bilderlauf\Debug\Release\Debug.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\VSProjects\Bilderlauf\Debug\Release\Debug.lib" /MACHINE:X86 Release\Bilderlauf.obj
          Release\bl_bmp.obj
@@ -46,4 +43,4 @@
 
 Das Erstellen war erfolgreich.
 
-Verstrichene Zeit 00:00:01.46
+Verstrichene Zeit 00:00:01.22
