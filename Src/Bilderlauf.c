@@ -168,7 +168,9 @@ void drawHexagon(int x, int y, bl_BMPData *data)
 	//Top and bottom face
 	for(i = 0; i < 2; i++){
 		glBegin(GL_POLYGON);
-		for(j = 0; j < 6; j++){
+		//for(j = 0; j < 6; j++){
+		//	glVertex3fv(hexa_vertices_scaled[j+i*6]); }
+		for(j = 5; j >= 0; j--){
 			glVertex3fv(hexa_vertices_scaled[j+i*6]); }
 		glEnd();
 	}
@@ -331,7 +333,7 @@ void draw(void)
 			cullz += yOffset *  i; //cameras[cameraCurrent]->Mode == BL_CAM_FPP ? yOffset * i : 0;
 			//cully += cameras[cameraCurrent]->Mode == BL_CAM_TOP ? yOffset * i : 0;
 
-			if(SphereInFrustum(cullx,cully,cullz,bl_hexasize)){
+			if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*1.5f)){
 
 				glPushMatrix();
 				if(drawMode == DRAW_HEXAGON){
@@ -536,6 +538,11 @@ int main(int argc, char **argv)
 	glutCreateWindow(prgNameBuffer);
 
 	glEnable(GL_DEPTH_TEST);
+
+	//enable face culling
+	glEnable  (GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	glClearColor(0,0.75f,0.75f,1.f);
 
 	glutDisplayFunc(draw);
@@ -549,8 +556,8 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(key); 
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardUpFunc(releaseKey);
+
 	
-	//
 	timer(1);
 	glutMainLoop();
 	return 0;
