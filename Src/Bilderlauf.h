@@ -38,7 +38,7 @@ enum {DRAW_HEXAGON=0,DRAW_CUBE=1};
 int main(int argc, char **argv);
 
 void createHexagonVertices(float size, float height);
-void drawHexagon(int x, int y, bl_BMPData *data, int mode);
+void drawHexagon(int x, int y, bl_BMPData *data, int mode, float _opacity);
 void drawCube(int x, int y, bl_BMPData *data);
 bl_CameraPosition calculateTopCameraPosition();
 void draw(void);

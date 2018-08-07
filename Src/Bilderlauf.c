@@ -99,12 +99,11 @@ void createHexagonVertices(float size, float height){
 
 //Draws a hexagon at x,y position
 /*************************************************************************/
-void drawHexagon(int x, int y, bl_BMPData *data, int mode)
+void drawHexagon(int x, int y, bl_BMPData *data, int mode, float _opacity)
 	/*************************************************************************/
 { 
 	GLfloat transX, transY, transZ;
 	GLint i,j;
-
 
 	//Vertices of the side faces
 	static GLint side_faces[6][4] =
@@ -139,9 +138,9 @@ void drawHexagon(int x, int y, bl_BMPData *data, int mode)
 	glTranslatef(transX, transY, transZ);
 
 	if(!mode || wireframemode){
-		glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
+		glColor4f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B, _opacity);
 	}else{
-		glColor3f(0,0,0);
+		glColor4f(0,0,0,_opacity);
 	}
 	//Change height of hexagon
 	if(cameras[cameraCurrent]->Mode == BL_CAM_FPP){
@@ -266,12 +265,8 @@ void draw(void)
 	/*************************************************************************/
 { 
 	int i,j;
-	float cullx, cully, cullz;
+	float cullx, cully, cullz, opacity = 1.f;
 
-	//Frametime
-	frameTime = glutGet(GLUT_ELAPSED_TIME);
-	deltaTime = frameTime - oldFrameTime;
-	oldFrameTime = frameTime;
 
 	//Start render
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -307,6 +302,15 @@ void draw(void)
 				continue;
 			}
 
+			if( abs(abs(bl_player->positionOnGridX-j) - DRAWDISTANCE) < 4 &&
+				abs(abs(bl_player->positionOnGridX-j) - DRAWDISTANCE) > 0){
+					opacity = 1.f - 0.2f*(4-abs(abs(bl_player->positionOnGridX-j) - DRAWDISTANCE));
+			}else if( abs(abs(bl_player->positionOnGridY-i) - DRAWDISTANCE) < 4 &&
+				abs(abs(bl_player->positionOnGridY-i) - DRAWDISTANCE) > 0){
+					opacity = 1.f - 0.2f*(4-abs(abs(bl_player->positionOnGridY-i) - DRAWDISTANCE));
+			}else{
+				opacity = 1.f;
+			}
 
 			//frustum culling
 			//position of hexagon in question
@@ -323,7 +327,7 @@ void draw(void)
 
 				glPushMatrix();
 				if(drawMode == DRAW_HEXAGON){
-					drawHexagon(j,i, bl_PictureData,0);
+					drawHexagon(j,i, bl_PictureData,0,opacity);
 				}else if(drawMode == DRAW_CUBE){
 					drawCube(j,i, bl_PictureData);
 				}
@@ -363,7 +367,7 @@ void draw(void)
 
 					glPushMatrix();
 					if(drawMode == DRAW_HEXAGON){
-						drawHexagon(j,i, bl_PictureData,1);
+						drawHexagon(j,i, bl_PictureData,1, opacity);
 					}else if(drawMode == DRAW_CUBE){
 						drawCube(j,i, bl_PictureData);
 					}
@@ -415,10 +419,11 @@ void releaseKey(unsigned char key, int x, int y){
 		case 'a': input[2] = 0; break;
 		case 'd': input[3] = 0; break;
 		case SPACE: input[4] = 0; break;
-		case 'q': bl_player->isRunning = !bl_player->isRunning; break;
+
 		case '1': wireframemode = !wireframemode;break;
 		case '2': edgecoloring = !edgecoloring;break;
 		case '3': anaglyph = !anaglyph;break;
+		case '4': bl_player->isRunning = !bl_player->isRunning; break;
 	}
 
 }
@@ -567,6 +572,8 @@ int main(int argc, char **argv)
 	glutCreateWindow(prgNameBuffer);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//enable face culling
 	glEnable  (GL_CULL_FACE);
