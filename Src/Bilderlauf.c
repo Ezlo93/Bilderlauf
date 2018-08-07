@@ -265,7 +265,7 @@ void draw(void)
 	/*************************************************************************/
 { 
 	int i,j;
-	float cullx, cully, cullz, opacity = 1.f;
+	float cullx, cully, cullz, opacity = 1.f, distance;
 
 
 	//Start render
@@ -297,21 +297,6 @@ void draw(void)
 	for(i = 0; i < bl_PictureData->bmpHeight; i++){
 		for(j = 0; j < bl_PictureData->bmpWidth; j++){
 
-			//draw distance
-			if(abs(bl_player->positionOnGridX-j) > DRAWDISTANCE || abs(bl_player->positionOnGridY-i) > DRAWDISTANCE){
-				continue;
-			}
-
-			if( abs(abs(bl_player->positionOnGridX-j) - DRAWDISTANCE) < 4 &&
-				abs(abs(bl_player->positionOnGridX-j) - DRAWDISTANCE) > 0){
-					opacity = 1.f - 0.2f*(4-abs(abs(bl_player->positionOnGridX-j) - DRAWDISTANCE));
-			}else if( abs(abs(bl_player->positionOnGridY-i) - DRAWDISTANCE) < 4 &&
-				abs(abs(bl_player->positionOnGridY-i) - DRAWDISTANCE) > 0){
-					opacity = 1.f - 0.2f*(4-abs(abs(bl_player->positionOnGridY-i) - DRAWDISTANCE));
-			}else{
-				opacity = 1.f;
-			}
-
 			//frustum culling
 			//position of hexagon in question
 			cullx = bl_hexawidth * j;
@@ -321,6 +306,17 @@ void draw(void)
 			//translate x of odd rows
 			if (i % 2 == 1){
 				cullx -= bl_hexawidth / 2;
+			}
+
+			//draw distance
+			distance = (float)(sqrt(pow((double)(cullx-bl_player->x),2) + (pow((double)(cullz-bl_player->y),2))));
+			
+			if(distance > DRAWDISTANCE){
+				continue;
+			}else if(distance > (DRAWDISTANCE - DRAWDISTANCE_BLEND_DISTANCE)){
+				opacity = (DRAWDISTANCE-distance) / DRAWDISTANCE_BLEND_DISTANCE;
+			}else{
+				opacity = 1.f;
 			}
 
 			if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*HEXAGONMAXHEIGHT/2) && !wireframemode){
@@ -346,12 +342,6 @@ void draw(void)
 		for(i = 0; i < bl_PictureData->bmpHeight; i++){
 			for(j = 0; j < bl_PictureData->bmpWidth; j++){
 
-				//draw distance
-				if(abs(bl_player->positionOnGridX-j) > DRAWDISTANCE || abs(bl_player->positionOnGridY-i) > DRAWDISTANCE){
-					continue;
-				}
-
-
 				//frustum culling
 				//position of hexagon in question
 				cullx = bl_hexawidth * j;
@@ -362,6 +352,17 @@ void draw(void)
 				if (i % 2 == 1){
 					cullx -= bl_hexawidth / 2;
 				}
+
+			distance = (float)(sqrt(pow((double)(cullx-bl_player->x),2) + (pow((double)(cullz-bl_player->y),2))));
+			//draw distance
+			if(distance > DRAWDISTANCE){
+				continue;
+			}else if(distance > (DRAWDISTANCE - DRAWDISTANCE_BLEND_DISTANCE)){
+ 				opacity = (DRAWDISTANCE-distance) / DRAWDISTANCE_BLEND_DISTANCE;
+			}else{
+				opacity = 1.f;
+			}
+
 
 				if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*HEXAGONMAXHEIGHT/2)){
 
