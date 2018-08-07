@@ -91,7 +91,7 @@ void calculateHeight(bl_BMPData *data, float scale){
 
 	for(i = 0; i < data->bmpWidth*data->bmpHeight; i++){
 		//Current color value
-		c = (data->bmpData[i].R +  data->bmpData[i].G + data->bmpData[i].B)/3;
+		c = (data->bmpData[i].R +  data->bmpData[i].G + data->bmpData[i].B)/3.f;
 		//scale the value so min -> 0 height, max -> scale height
 		data->bmpData[i].Height = (c - min) / (max-min) * scale;
 

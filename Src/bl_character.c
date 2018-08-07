@@ -9,6 +9,7 @@ bl_Character* bl_CreateCharacter(float _X, float _Y, float _Z, float _height, bl
 	c->z = _Z;
 	c->positionOnGridX = 0;
 	c->positionOnGridY = 0;
+	c->isRunning = 0;
 
 	c->height = _height;
 	c->inAir = 0;
@@ -39,7 +40,7 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 			}
 		}
 
-		char_actual_speed = _input[5]? BL_CHARACTER_SPEED * 2 : BL_CHARACTER_SPEED;
+		char_actual_speed = _char->isRunning ? BL_CHARACTER_SPEED * 2 : BL_CHARACTER_SPEED;
 
 		//ADD JUMP
 
@@ -47,7 +48,7 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 
 				_char->inAir = 1;
 				_char->airTime = 0;
-				_char->zVelocity = _input[5] ? BL_CHARACTER_JUMP_VELOCITY * 1.5f : BL_CHARACTER_JUMP_VELOCITY;
+				_char->zVelocity = _char->isRunning ? BL_CHARACTER_JUMP_VELOCITY * 1.5f : BL_CHARACTER_JUMP_VELOCITY;
 				_char->zOrigin = _char->z;
 
 		}

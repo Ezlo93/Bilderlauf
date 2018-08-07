@@ -3,22 +3,14 @@
 #include "Bilderlauf.h"
 #include "debug.h"
 
-#define ESC        27
-#define SPACE	   32
-
-#define CAMERAMAX 2
-#define DRAWDISTANCE 32
-
-enum {X=0, Y=1, Z=2, W=3};
-enum {DRAW_HEXAGON=0,DRAW_CUBE=1};
 
 /*Globale Variablen: */
 
 int drawMode = DRAW_HEXAGON;
 GLfloat frameTime = 0, oldFrameTime = 0, deltaTime = 0;
-int input[6];
+int input[5];
 float frustum[6][4];
-
+int wireframemode = 0;
 
 //Window Settings
 float    eyez=10., diag=0., viewScale=1., angle[3]={0.,0.,0.};
@@ -28,13 +20,12 @@ GLdouble nah=1., fern=10000.;
 char *title;
 
 //Hexagon Variables
-float bl_hexasize = 2.f, bl_hexaheight, bl_hexawidth, bl_hexavert;
-GLfloat xOffset = 0.0, yOffset = 0.0;
+float bl_hexasize = HEXAGONSIZE, bl_hexaheight, bl_hexawidth, bl_hexavert;
 GLfloat hexa_vertices[12][3];
 GLfloat hexa_vertices_rotated[12][3];
 GLfloat hexa_vertices_scaled[12][3];
 
-float height_scale = 5.f;
+float height_scale = HEXAGONMAXHEIGHT;
 
 //Cube Variables
 float bl_cubesize = 1.f;
@@ -71,7 +62,7 @@ void createHexagonVertices(float size, float height){
 	//reduce size temporarily to draw slightly smaller hexagons
 	//in order to create a little space between them so that the
 	//camera can't glitch into them
-	size -= 0.05f;
+	size -= HEXAGONOFFSET;
 
 	for(i = 0; i < 6; i++){
 		angle_rad = M_PI / 180 * (60*i + 30);
@@ -96,7 +87,7 @@ void createHexagonVertices(float size, float height){
 		hexa_vertices_rotated[i+6][2] = hexa_vertices[i+6][1];
 	}
 
-	size += 0.05f;
+	size += HEXAGONOFFSET;
 
 	bl_hexaheight = size*2; 
 	bl_hexawidth = sqrt(3.f) * size;
@@ -105,7 +96,7 @@ void createHexagonVertices(float size, float height){
 
 //Draws a hexagon at x,y position
 /*************************************************************************/
-void drawHexagon(int x, int y, bl_BMPData *data)
+void drawHexagon(int x, int y, bl_BMPData *data, int mode)
 	/*************************************************************************/
 { 
 	GLfloat transX, transY, transZ;
@@ -141,16 +132,14 @@ void drawHexagon(int x, int y, bl_BMPData *data)
 		transX -= bl_hexawidth / 2;
 	}
 
-	//Additional offset
-	transX += xOffset * x;
-	transZ += cameras[cameraCurrent]->Mode == BL_CAM_FPP ? yOffset * y : 0;
-	transY += cameras[cameraCurrent]->Mode == BL_CAM_TOP ? yOffset * y : 0;
-
 	//Translation & Color of Hexagon
 	glTranslatef(transX, transY, transZ);
 
-	glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
-
+	if(!mode || wireframemode){
+		glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
+	}else{
+		glColor3f(0,0,0);
+	}
 	//Change height of hexagon
 	if(cameras[cameraCurrent]->Mode == BL_CAM_FPP){
 		memcpy(hexa_vertices_scaled, hexa_vertices_rotated, sizeof(hexa_vertices_rotated));
@@ -168,8 +157,7 @@ void drawHexagon(int x, int y, bl_BMPData *data)
 	//Top and bottom face
 	for(i = 0; i < 2; i++){
 		glBegin(GL_POLYGON);
-		//for(j = 0; j < 6; j++){
-		//	glVertex3fv(hexa_vertices_scaled[j+i*6]); }
+
 		for(j = 5; j >= 0; j--){
 			glVertex3fv(hexa_vertices_scaled[j+i*6]); }
 		glEnd();
@@ -220,10 +208,6 @@ static GLint faces[6][4] =
 	transY = bl_cubesize * y;
 	transZ = data->bmpData[data->bmpWidth*y+x].Height;
 
-	//Additional offset
-	transX += xOffset * x;
-	transY += yOffset * y;
-
 	switch(cameras[cameraCurrent]->Mode){
 
 		case BL_CAM_FPP: glTranslatef(transX, transZ, transY); break;
@@ -265,8 +249,8 @@ bl_CameraPosition calculateTopCameraPosition(){
 	case 1: w = bl_cubesize;
 	}
 
-	pos.X = (bl_PictureData->bmpWidth * w + bl_PictureData->bmpWidth * xOffset)/2;
-	pos.Y = (bl_PictureData->bmpHeight * w + bl_PictureData->bmpHeight * yOffset)/2;
+	pos.X = (bl_PictureData->bmpWidth * w)/2;
+	pos.Y = (bl_PictureData->bmpHeight * w)/2;
 	pos.Z = 20;
 
 	return pos;
@@ -308,6 +292,10 @@ void draw(void)
 
 	ExtractFrustum();
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glLineWidth(1.f);
+
+
 	for(i = 0; i < bl_PictureData->bmpHeight; i++){
 		for(j = 0; j < bl_PictureData->bmpWidth; j++){
 
@@ -328,16 +316,51 @@ void draw(void)
 				cullx -= bl_hexawidth / 2;
 			}
 
-			//Additional offset
-			cullx += xOffset * j;
-			cullz += yOffset *  i; //cameras[cameraCurrent]->Mode == BL_CAM_FPP ? yOffset * i : 0;
-			//cully += cameras[cameraCurrent]->Mode == BL_CAM_TOP ? yOffset * i : 0;
-
-			if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*1.5f)){
+			if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*HEXAGONMAXHEIGHT/2) && !wireframemode){
 
 				glPushMatrix();
 				if(drawMode == DRAW_HEXAGON){
-					drawHexagon(j,i, bl_PictureData);
+					drawHexagon(j,i, bl_PictureData,0);
+				}else if(drawMode == DRAW_CUBE){
+					drawCube(j,i, bl_PictureData);
+				}
+				glPopMatrix();
+
+			}
+		}
+	}
+
+	//test
+	
+	glEnable (GL_LINE_SMOOTH);
+	glLineWidth(2.f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	for(i = 0; i < bl_PictureData->bmpHeight; i++){
+		for(j = 0; j < bl_PictureData->bmpWidth; j++){
+
+			//draw distance
+			if(abs(bl_player->positionOnGridX-j) > DRAWDISTANCE || abs(bl_player->positionOnGridY-i) > DRAWDISTANCE){
+				continue;
+			}
+
+
+			//frustum culling
+			//position of hexagon in question
+			cullx = bl_hexawidth * j;
+			cully = bl_PictureData->bmpData[bl_PictureData->bmpWidth*i+j].Height;
+			cullz = bl_hexavert * i;
+
+			//translate x of odd rows
+			if (i % 2 == 1){
+				cullx -= bl_hexawidth / 2;
+			}
+
+			if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*HEXAGONMAXHEIGHT/2)){
+
+				glPushMatrix();
+				if(drawMode == DRAW_HEXAGON){
+					drawHexagon(j,i, bl_PictureData,1);
 				}else if(drawMode == DRAW_CUBE){
 					drawCube(j,i, bl_PictureData);
 				}
@@ -367,12 +390,12 @@ void key(unsigned char key, int x, int y)
 		case 'a': input[2] = 1; break;
 		case 'd': input[3] = 1; break;
 		case SPACE: input[4] = 1; break;
-		case 'q': input[5] = 1; break;
 
 #if DEBUG > 0
 	case 'r': drawMode = !drawMode; calculateTopCameraPosition(); cameraCurrent = (cameraCurrent + 1) % CAMERAMAX;break;
 	case 'p': bl_CameraInfo(cameras[cameraCurrent]);
-		printf("Player @%d,%d\n", bl_player->positionOnGridX, bl_player->positionOnGridY); break;
+		printf("Player @%d,%d\n", bl_player->positionOnGridX, bl_player->positionOnGridY); 
+		printf("Height: %f\n", bl_PictureData->bmpData[bl_PictureData->bmpWidth*bl_player->positionOnGridY+bl_player->positionOnGridX].Height);break;
 #endif
 
 	}
@@ -389,7 +412,8 @@ void releaseKey(unsigned char key, int x, int y){
 		case 'a': input[2] = 0; break;
 		case 'd': input[3] = 0; break;
 		case SPACE: input[4] = 0; break;
-		case 'q': input[5] = 0; break;
+		case 'q': bl_player->isRunning = !bl_player->isRunning; break;
+		case 'e': wireframemode = !wireframemode;break;
 	}
 
 }

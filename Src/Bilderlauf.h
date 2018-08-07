@@ -21,10 +21,24 @@
 
 #define FILENAMEBUFFER 100
 
+#define ESC        27
+#define SPACE	   32
+
+#define CAMERAMAX 2
+#define DRAWDISTANCE 32
+
+#define HEXAGONOFFSET 0.1f
+#define HEXAGONSIZE 2.5f
+#define HEXAGONMAXHEIGHT 13.f
+
+enum {X=0, Y=1, Z=2, W=3};
+enum {DRAW_HEXAGON=0,DRAW_CUBE=1};
+
+
 int main(int argc, char **argv);
 
 void createHexagonVertices(float size, float height);
-void drawHexagon(int x, int y, bl_BMPData *data);
+void drawHexagon(int x, int y, bl_BMPData *data, int mode);
 void drawCube(int x, int y, bl_BMPData *data);
 bl_CameraPosition calculateTopCameraPosition();
 void draw(void);

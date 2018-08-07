@@ -5,14 +5,15 @@
 #include "bl_bmp.h"
 #include <math.h>
 
-#define BL_CHARACTER_SPEED 8.0f 
-#define BL_CHARACTER_HEIGHT 3.5f
+#define BL_CHARACTER_SPEED 8.5f 
+#define BL_CHARACTER_HEIGHT 4.f
 #define BL_CHARACTER_CLIMB_THRESHOLD .8f
-#define BL_CHARACTER_JUMP_VELOCITY 7.7f
-#define GRAVITY 9.81f
+#define BL_CHARACTER_JUMP_VELOCITY 12.f
+#define GRAVITY 9.81f * 1.3f
 
 typedef struct{
 	float x,y,z;
+	int isRunning;
 	float height;
 
 	int inAir;
