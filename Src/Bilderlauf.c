@@ -10,7 +10,10 @@ int drawMode = DRAW_HEXAGON;
 GLfloat frameTime = 0, oldFrameTime = 0, deltaTime = 0;
 int input[5];
 float frustum[6][4];
+
 int wireframemode = 0;
+int edgecoloring = 1;
+int anaglyph = 0;
 
 //Window Settings
 float    eyez=10., diag=0., viewScale=1., angle[3]={0.,0.,0.};
@@ -331,45 +334,45 @@ void draw(void)
 	}
 
 	//test
-	
-	glEnable (GL_LINE_SMOOTH);
-	glLineWidth(2.f);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if(edgecoloring || wireframemode){	
+		glEnable (GL_LINE_SMOOTH);
+		glLineWidth(2.f);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	for(i = 0; i < bl_PictureData->bmpHeight; i++){
-		for(j = 0; j < bl_PictureData->bmpWidth; j++){
+		for(i = 0; i < bl_PictureData->bmpHeight; i++){
+			for(j = 0; j < bl_PictureData->bmpWidth; j++){
 
-			//draw distance
-			if(abs(bl_player->positionOnGridX-j) > DRAWDISTANCE || abs(bl_player->positionOnGridY-i) > DRAWDISTANCE){
-				continue;
-			}
-
-
-			//frustum culling
-			//position of hexagon in question
-			cullx = bl_hexawidth * j;
-			cully = bl_PictureData->bmpData[bl_PictureData->bmpWidth*i+j].Height;
-			cullz = bl_hexavert * i;
-
-			//translate x of odd rows
-			if (i % 2 == 1){
-				cullx -= bl_hexawidth / 2;
-			}
-
-			if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*HEXAGONMAXHEIGHT/2)){
-
-				glPushMatrix();
-				if(drawMode == DRAW_HEXAGON){
-					drawHexagon(j,i, bl_PictureData,1);
-				}else if(drawMode == DRAW_CUBE){
-					drawCube(j,i, bl_PictureData);
+				//draw distance
+				if(abs(bl_player->positionOnGridX-j) > DRAWDISTANCE || abs(bl_player->positionOnGridY-i) > DRAWDISTANCE){
+					continue;
 				}
-				glPopMatrix();
 
+
+				//frustum culling
+				//position of hexagon in question
+				cullx = bl_hexawidth * j;
+				cully = bl_PictureData->bmpData[bl_PictureData->bmpWidth*i+j].Height;
+				cullz = bl_hexavert * i;
+
+				//translate x of odd rows
+				if (i % 2 == 1){
+					cullx -= bl_hexawidth / 2;
+				}
+
+				if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*HEXAGONMAXHEIGHT/2)){
+
+					glPushMatrix();
+					if(drawMode == DRAW_HEXAGON){
+						drawHexagon(j,i, bl_PictureData,1);
+					}else if(drawMode == DRAW_CUBE){
+						drawCube(j,i, bl_PictureData);
+					}
+					glPopMatrix();
+
+				}
 			}
 		}
 	}
-
 	glutSwapBuffers();
 
 }
@@ -413,7 +416,9 @@ void releaseKey(unsigned char key, int x, int y){
 		case 'd': input[3] = 0; break;
 		case SPACE: input[4] = 0; break;
 		case 'q': bl_player->isRunning = !bl_player->isRunning; break;
-		case 'e': wireframemode = !wireframemode;break;
+		case '1': wireframemode = !wireframemode;break;
+		case '2': edgecoloring = !edgecoloring;break;
+		case '3': anaglyph = !anaglyph;break;
 	}
 
 }

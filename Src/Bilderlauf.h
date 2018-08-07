@@ -25,7 +25,7 @@
 #define SPACE	   32
 
 #define CAMERAMAX 2
-#define DRAWDISTANCE 32
+#define DRAWDISTANCE 28
 
 #define HEXAGONOFFSET 0.1f
 #define HEXAGONSIZE 2.5f
