@@ -8,6 +8,7 @@
 
 int drawMode = DRAW_HEXAGON;
 GLfloat frameTime = 0, oldFrameTime = 0, deltaTime = 0;
+int init_time, final_time, frame_count=0;
 int input[5];
 float frustum[6][4];
 
@@ -25,13 +26,10 @@ char *title;
 //Hexagon Variables
 float bl_hexasize = HEXAGONSIZE, bl_hexaheight, bl_hexawidth, bl_hexavert;
 GLfloat hexa_vertices[12][3];
-GLfloat hexa_vertices_rotated[12][3];
+GLfloat hexa_vertices_sw[12][3];
 GLfloat hexa_vertices_scaled[12][3];
 
 float height_scale = HEXAGONMAXHEIGHT;
-
-//Cube Variables
-float bl_cubesize = 1.f;
 
 //Mouse Variables
 GLfloat deltaAngle = .0f;
@@ -41,7 +39,7 @@ int xOrigin = -1;
 bl_Character* bl_player;
 
 //Camera
-int cameraCurrent = 1;
+int cameraCurrent = 0;
 bl_Camera *cameras[CAMERAMAX];
 float rotation_speed = M_PI/180*0.1f;
 int cameraReverseX = 1, cameraReverseY = -1;
@@ -53,11 +51,9 @@ unsigned char *bitmapData;
 bl_BMPData *bl_PictureData;
 
 
-//Vertex calculations
-
 
 //Calculates vertices/properties of a hexagon 
-void createHexagonVertices(float size, float height){
+void createHexagonVertices(float _size, float _height){
 
 	int i;
 	double angle_rad;
@@ -65,41 +61,43 @@ void createHexagonVertices(float size, float height){
 	//reduce size temporarily to draw slightly smaller hexagons
 	//in order to create a little space between them so that the
 	//camera can't glitch into them
-	size -= HEXAGONOFFSET;
+	_size -= HEXAGONOFFSET;
 
 	for(i = 0; i < 6; i++){
 		angle_rad = M_PI / 180 * (60*i + 30);
 
-		hexa_vertices[i][0] = size * cos(angle_rad);
+
+		hexa_vertices[i][0] = _size * cos(angle_rad);
 		hexa_vertices[i+6][0] = hexa_vertices[i][0];
 
-		hexa_vertices[i][1] = size * sin(angle_rad);
+		hexa_vertices[i][1] = _size * sin(angle_rad);
 		hexa_vertices[i+6][1] = hexa_vertices[i][1];
 
 		hexa_vertices[i][2] = 0;
-		hexa_vertices[i+6][2] = height;
+		hexa_vertices[i+6][2] = _height;
 
-		//gedrehte Hexagons
-		hexa_vertices_rotated[i][0] = hexa_vertices[i][0];
-		hexa_vertices_rotated[i+6][0] = hexa_vertices[i+6][0];
+		//switched hexagons
+		hexa_vertices_sw[i][0] = hexa_vertices[i][0];
+		hexa_vertices_sw[i+6][0] = hexa_vertices[i+6][0];
 
-		hexa_vertices_rotated[i][1] = hexa_vertices[i][2];
-		hexa_vertices_rotated[i+6][1] = hexa_vertices[i+6][2];
+		hexa_vertices_sw[i][1] = hexa_vertices[i][2];
+		hexa_vertices_sw[i+6][1] = hexa_vertices[i+6][2];
 
-		hexa_vertices_rotated[i][2] = hexa_vertices[i][1];
-		hexa_vertices_rotated[i+6][2] = hexa_vertices[i+6][1];
+		hexa_vertices_sw[i][2] = hexa_vertices[i][1];
+		hexa_vertices_sw[i+6][2] = hexa_vertices[i+6][1];
+
 	}
 
-	size += HEXAGONOFFSET;
+	_size += HEXAGONOFFSET;
 
-	bl_hexaheight = size*2; 
-	bl_hexawidth = sqrt(3.f) * size;
+	bl_hexaheight = _size*2; 
+	bl_hexawidth = sqrt(3.f) * _size;
 	bl_hexavert = bl_hexaheight * 3/4;
 }
 
 //Draws a hexagon at x,y position
 /*************************************************************************/
-void drawHexagon(int x, int y, bl_BMPData *data, int mode, float _opacity)
+void drawHexagon(int _x, int _y, bl_BMPData *_data, int _mode, float _opacity)
 	/*************************************************************************/
 { 
 	GLfloat transX, transY, transZ;
@@ -116,159 +114,110 @@ void drawHexagon(int x, int y, bl_BMPData *data, int mode, float _opacity)
 		{5, 11, 6, 0}
 	};
 
-	//Position depending on camera
-	transX = bl_hexawidth * x;
+	//Position
+	transX = bl_hexawidth * _x;
+	transY = _data->bmpData[_data->bmpWidth*_y+_x].Height;
+	transZ = bl_hexavert * _y;
 
-	if(cameras[cameraCurrent]->Mode == BL_CAM_FPP){
-		transY = data->bmpData[data->bmpWidth*y+x].Height;
-		transZ = bl_hexavert * y;
-
-	}else{
-		transY = bl_hexavert * y;
-		transZ = data->bmpData[data->bmpWidth*y+x].Height;
-
-	}
 
 	//translate x of odd rows
-	if (y % 2 == 1){
+	if (_y % 2 == 1){
 		transX -= bl_hexawidth / 2;
 	}
 
 	//Translation & Color of Hexagon
 	glTranslatef(transX, transY, transZ);
+	glColor4f(_data->bmpData[_data->bmpWidth*_y+_x].R,_data->bmpData[_data->bmpWidth*_y+_x].G,_data->bmpData[_data->bmpWidth*_y+_x].B, _opacity);
 
-	if(!mode || wireframemode){
-		glColor4f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B, _opacity);
-	}else{
-		glColor4f(0,0,0,_opacity);
-	}
+
 	//Change height of hexagon
-	if(cameras[cameraCurrent]->Mode == BL_CAM_FPP){
-		memcpy(hexa_vertices_scaled, hexa_vertices_rotated, sizeof(hexa_vertices_rotated));
-		for(i = 0; i < 6; i++){
-			hexa_vertices_scaled[i][1] -= transY;
+
+	memcpy(hexa_vertices_scaled, hexa_vertices_sw, sizeof(hexa_vertices));
+	for(i = 0; i < 6; i++){
+		hexa_vertices_scaled[i][1] -= transY;
+	}
+
+	//if not wireframe mode draw hexagon
+
+	if(_mode != 2){
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glLineWidth(1.f);
+
+		//Top and bottom face
+		for(i = 0; i < 2; i++){
+			glBegin(GL_POLYGON);
+
+			for(j = 5; j >= 0; j--){
+				glVertex3fv(hexa_vertices_scaled[j+i*6]); }
+			glEnd();
 		}
+
+		//Side faces
+		for (i = 0; i < 6; i++) {
+			glBegin(GL_QUADS);
+			glVertex3fv(hexa_vertices_scaled[side_faces[i][0]]);
+			glVertex3fv(hexa_vertices_scaled[side_faces[i][1]]);
+			glVertex3fv(hexa_vertices_scaled[side_faces[i][2]]);
+			glVertex3fv(hexa_vertices_scaled[side_faces[i][3]]);
+			glEnd();
+		}
+	}
+
+	//color of the edge
+	if(_mode == 2){
+		glColor4f(_data->bmpData[_data->bmpWidth*_y+_x].R,_data->bmpData[_data->bmpWidth*_y+_x].G,_data->bmpData[_data->bmpWidth*_y+_x].B, _opacity);
+	}else if(_mode == 0){
+		glColor4f(0,0,0,_opacity);
 	}else{
-		memcpy(hexa_vertices_scaled, hexa_vertices, sizeof(hexa_vertices));
-		for(i = 0; i < 6; i++){
-			hexa_vertices_scaled[i][2] -= transZ;
+		return;
+	}
+
+	//draw edge
+	glLineWidth(2.f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
+
+	for(i = 0; i < 2; i++){
+			glBegin(GL_POLYGON);
+
+			for(j = 5; j >= 0; j--){
+				glVertex3fv(hexa_vertices_scaled[j+i*6]); }
+			glEnd();
 		}
 
-	}
-
-	//Top and bottom face
-	for(i = 0; i < 2; i++){
-		glBegin(GL_POLYGON);
-
-		for(j = 5; j >= 0; j--){
-			glVertex3fv(hexa_vertices_scaled[j+i*6]); }
-		glEnd();
-	}
-
-	//Side faces
 	for (i = 0; i < 6; i++) {
-		glBegin(GL_QUADS);
-		glVertex3fv(hexa_vertices_scaled[side_faces[i][0]]);
-		glVertex3fv(hexa_vertices_scaled[side_faces[i][1]]);
-		glVertex3fv(hexa_vertices_scaled[side_faces[i][2]]);
-		glVertex3fv(hexa_vertices_scaled[side_faces[i][3]]);
-		glEnd();
-	}
-
-
+			glBegin(GL_QUADS);
+			glVertex3fv(hexa_vertices_scaled[side_faces[i][0]]);
+			glVertex3fv(hexa_vertices_scaled[side_faces[i][1]]);
+			glVertex3fv(hexa_vertices_scaled[side_faces[i][2]]);
+			glVertex3fv(hexa_vertices_scaled[side_faces[i][3]]);
+			glEnd();
+		}
 }
-
-//Draws a cube at x, y position
-void drawCube(int x, int y, bl_BMPData *data){
-
-static GLfloat n[6][3] =
-  {
-    {-1.0, 0.0, 0.0},
-    {0.0, 1.0, 0.0},
-    {1.0, 0.0, 0.0},
-    {0.0, -1.0, 0.0},
-    {0.0, 0.0, 1.0},
-    {0.0, 0.0, -1.0}
-  };
-static GLint faces[6][4] =
-  {
-    {0, 1, 2, 3},
-    {3, 2, 6, 7},
-    {7, 6, 5, 4},
-    {4, 5, 1, 0},
-    {5, 6, 2, 1},
-    {7, 4, 0, 3}
-  };
-  GLfloat v[8][3];
-  GLint i;
-
-
-	GLfloat transX, transY, transZ;
-
-	//Position
-	transX = bl_cubesize * x;
-	transY = bl_cubesize * y;
-	transZ = data->bmpData[data->bmpWidth*y+x].Height;
-
-	switch(cameras[cameraCurrent]->Mode){
-
-		case BL_CAM_FPP: glTranslatef(transX, transZ, transY); break;
-		case BL_CAM_TOP: glTranslatef(transX, transY, transZ); break;
-
-	}
-
-	glColor3f(data->bmpData[data->bmpWidth*y+x].R,data->bmpData[data->bmpWidth*y+x].G,data->bmpData[data->bmpWidth*y+x].B);
-
-
-  v[0][0] = v[1][0] = v[2][0] = v[3][0] = -bl_cubesize / 2;
-  v[4][0] = v[5][0] = v[6][0] = v[7][0] = bl_cubesize / 2;
-  v[0][1] = v[1][1] = v[4][1] = v[5][1] = -bl_cubesize / 2;
-  v[2][1] = v[3][1] = v[6][1] = v[7][1] = bl_cubesize / 2;
-  v[0][2] = v[3][2] = v[4][2] = v[7][2] = -bl_cubesize / 2;
-  v[1][2] = v[2][2] = v[5][2] = v[6][2] = bl_cubesize / 2;
-
-  for (i = 5; i >= 0; i--) {
-    glBegin(GL_QUADS);
-    glNormal3fv(&n[i][0]);
-    glVertex3fv(&v[faces[i][0]][0]);
-    glVertex3fv(&v[faces[i][1]][0]);
-    glVertex3fv(&v[faces[i][2]][0]);
-    glVertex3fv(&v[faces[i][3]][0]);
-    glEnd();
-  }
-
-
-}
-
-
-
-bl_CameraPosition calculateTopCameraPosition(){
-	bl_CameraPosition pos;
-	float w;
-
-	switch(drawMode){
-	case 0: w = bl_hexawidth;
-	case 1: w = bl_cubesize;
-	}
-
-	pos.X = (bl_PictureData->bmpWidth * w)/2;
-	pos.Y = (bl_PictureData->bmpHeight * w)/2;
-	pos.Z = 20;
-
-	return pos;
-}
-
 
 //Draw routine
 /*************************************************************************/
 void draw(void)
 	/*************************************************************************/
 { 
-	int i,j;
+	int i,j, mode = 0;
 	float cullx, cully, cullz, opacity = 1.f, distance;
 
+	/*
+	mode:
+	- 0 filled hexagons and edgecoloring
+	- 1 only filled hexagons
+	- 2 colored wireframe
+	*/
 
-	//Start render
+	if(wireframemode){
+		mode = 2;
+	}else if(!edgecoloring){
+		mode = 1;
+	}
+
+	
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode( GL_PROJECTION );
@@ -290,14 +239,9 @@ void draw(void)
 
 	ExtractFrustum();
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glLineWidth(1.f);
-
-
 	for(i = 0; i < bl_PictureData->bmpHeight; i++){
 		for(j = 0; j < bl_PictureData->bmpWidth; j++){
 
-			//frustum culling
 			//position of hexagon in question
 			cullx = bl_hexawidth * j;
 			cully = bl_PictureData->bmpData[bl_PictureData->bmpWidth*i+j].Height;
@@ -319,13 +263,11 @@ void draw(void)
 				opacity = 1.f;
 			}
 
-			if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*HEXAGONMAXHEIGHT/2) && !wireframemode){
+			if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*HEXAGONMAXHEIGHT/2)){
 
 				glPushMatrix();
 				if(drawMode == DRAW_HEXAGON){
-					drawHexagon(j,i, bl_PictureData,0,opacity);
-				}else if(drawMode == DRAW_CUBE){
-					drawCube(j,i, bl_PictureData);
+					drawHexagon(j,i, bl_PictureData,mode,opacity);
 				}
 				glPopMatrix();
 
@@ -333,53 +275,16 @@ void draw(void)
 		}
 	}
 
-	//test
-	if(edgecoloring || wireframemode){	
-		glEnable (GL_LINE_SMOOTH);
-		glLineWidth(2.f);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-		for(i = 0; i < bl_PictureData->bmpHeight; i++){
-			for(j = 0; j < bl_PictureData->bmpWidth; j++){
-
-				//frustum culling
-				//position of hexagon in question
-				cullx = bl_hexawidth * j;
-				cully = bl_PictureData->bmpData[bl_PictureData->bmpWidth*i+j].Height;
-				cullz = bl_hexavert * i;
-
-				//translate x of odd rows
-				if (i % 2 == 1){
-					cullx -= bl_hexawidth / 2;
-				}
-
-			distance = (float)(sqrt(pow((double)(cullx-bl_player->x),2) + (pow((double)(cullz-bl_player->y),2))));
-			//draw distance
-			if(distance > DRAWDISTANCE){
-				continue;
-			}else if(distance > (DRAWDISTANCE - DRAWDISTANCE_BLEND_DISTANCE)){
- 				opacity = (DRAWDISTANCE-distance) / DRAWDISTANCE_BLEND_DISTANCE;
-			}else{
-				opacity = 1.f;
-			}
-
-
-				if(SphereInFrustum(cullx,cully,cullz,bl_hexasize*HEXAGONMAXHEIGHT/2)){
-
-					glPushMatrix();
-					if(drawMode == DRAW_HEXAGON){
-						drawHexagon(j,i, bl_PictureData,1, opacity);
-					}else if(drawMode == DRAW_CUBE){
-						drawCube(j,i, bl_PictureData);
-					}
-					glPopMatrix();
-
-				}
-			}
-		}
-	}
 	glutSwapBuffers();
-
+	frame_count++;
+	final_time = time(NULL);
+	if(final_time-init_time > 0){
+#if DEBUG > 0
+		printf("FPS: %d\n", frame_count /(final_time - init_time));
+#endif
+		frame_count = 0;
+		init_time = time(NULL);
+	}
 }
 
 
@@ -387,10 +292,10 @@ void draw(void)
 //Input
 
 
-void key(unsigned char key, int x, int y)
+void key(unsigned char _key, int _x, int _y)
 
 { 
-	switch (key)
+	switch (_key)
 	{ 
 		case ESC: exit(0); break;
 		case 'w': input[0] = 1; break;
@@ -400,7 +305,7 @@ void key(unsigned char key, int x, int y)
 		case SPACE: input[4] = 1; break;
 
 #if DEBUG > 0
-	case 'r': drawMode = !drawMode; calculateTopCameraPosition(); cameraCurrent = (cameraCurrent + 1) % CAMERAMAX;break;
+	//case 'r': drawMode = !drawMode; cameraCurrent = (cameraCurrent + 1) % CAMERAMAX;break;
 	case 'p': bl_CameraInfo(cameras[cameraCurrent]);
 		printf("Player @%d,%d\n", bl_player->positionOnGridX, bl_player->positionOnGridY); 
 		printf("Height: %f\n", bl_PictureData->bmpData[bl_PictureData->bmpWidth*bl_player->positionOnGridY+bl_player->positionOnGridX].Height);break;
@@ -412,9 +317,9 @@ void key(unsigned char key, int x, int y)
 }
 
 
-void releaseKey(unsigned char key, int x, int y){
+void releaseKey(unsigned char _key, int _x, int _y){
 
-	switch(key){
+	switch(_key){
 		case 'w': input[0] = 0; break;
 		case 's': input[1] = 0; break;
 		case 'a': input[2] = 0; break;
@@ -432,11 +337,11 @@ void releaseKey(unsigned char key, int x, int y){
 
 
 
-void mouseMove(int x, int y){
+void mouseMove(int _x, int _y){
 
 	static int just_warped = 0;
-	int dx = x - winWidth/2;
-	int dy = y - winHeight/2;
+	int dx = _x - winWidth/2;
+	int dy = _y - winHeight/2;
 
 	if(just_warped) {
 		just_warped = 0;
@@ -460,10 +365,11 @@ void mouseMove(int x, int y){
 
 
 //Update Loop
-void timer(int a) {
-	bl_UpdateCharacter(bl_player, &input, 1/120.f, bl_PictureData, bl_hexasize);
+void timer(int _a) {
+	bl_UpdateCharacter(bl_player, &input, 1/FPS, bl_PictureData, bl_hexasize);
     glutPostRedisplay();
-    glutTimerFunc(1000/120, timer, 0);
+    glutTimerFunc(1000/FPS, timer,0);
+
 }
 
 
@@ -557,12 +463,11 @@ int main(int argc, char **argv)
 	createHexagonVertices(bl_hexasize, 1.f);
 
 	//Basecamera Position
-	cameras[0] = CreateCamera(calculateTopCameraPosition(), BL_CAM_TOP);
-	cameras[1] = CreateCamera(CreateCameraPosition(0,2,0), BL_CAM_FPP);
+	cameras[0] = CreateCamera(CreateCameraPosition(0,2,0), BL_CAM_FPP);
 
 
 	//Character init
-	bl_player =	bl_CreateCharacter(0,0,bl_PictureData->bmpData[0].Height, BL_CHARACTER_HEIGHT , cameras[1]);
+	bl_player =	bl_CreateCharacter(0,0,bl_PictureData->bmpData[0].Height, BL_CHARACTER_HEIGHT , cameras[0]);
 
 	//Glut Init
 	glutInit(&argc, argv);
@@ -587,6 +492,7 @@ int main(int argc, char **argv)
 	//Glut input
 	glutMotionFunc(mouseMove);
 	glutPassiveMotionFunc(mouseMove);
+	glutTimerFunc(1000/FPS, timer, 0);
 
 	glutSetCursor(GLUT_CURSOR_NONE);
 	
@@ -595,7 +501,7 @@ int main(int argc, char **argv)
 	glutKeyboardUpFunc(releaseKey);
 
 	
-	timer(1);
+	init_time = time(NULL);
 	glutMainLoop();
 	return 0;
 }

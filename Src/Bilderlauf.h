@@ -24,32 +24,31 @@
 #define ESC        27
 #define SPACE	   32
 
-#define CAMERAMAX 2
+#define CAMERAMAX 1
 #define DRAWDISTANCE 112.f
 #define DRAWDISTANCE_BLEND_DISTANCE 16.f
+#define FPS 60.f
 
 #define HEXAGONOFFSET 0.1f
 #define HEXAGONSIZE 2.5f
-#define HEXAGONMAXHEIGHT 13.f
+#define HEXAGONMAXHEIGHT 10.f
 
 enum {X=0, Y=1, Z=2, W=3};
-enum {DRAW_HEXAGON=0,DRAW_CUBE=1};
+enum {DRAW_HEXAGON=0};
 
 
 int main(int argc, char **argv);
 
-void createHexagonVertices(float size, float height);
-void drawHexagon(int x, int y, bl_BMPData *data, int mode, float _opacity);
-void drawCube(int x, int y, bl_BMPData *data);
-bl_CameraPosition calculateTopCameraPosition();
+void createHexagonVertices(float _size, float _height);
+void drawHexagon(int _x, int _y, bl_BMPData *_data, int _mode, float _opacity);
 void draw(void);
 
-void key(unsigned char key, int x, int y);
-void releaseKey(unsigned char key, int x, int y);
-void mouseMove(int x, int y);
+void key(unsigned char _key, int _x, int _y);
+void releaseKey(unsigned char _key, int _x, int _y);
+void mouseMove(int _x, int _y);
 
-void timer(int a);
+void timer(int _a);
 void ExtractFrustum();
-int SphereInFrustum( float x, float y, float z, float radius );
+int SphereInFrustum( float _x, float _y, float _z, float _radius);
 
 #endif

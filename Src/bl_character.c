@@ -42,7 +42,7 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 
 		char_actual_speed = _char->isRunning ? BL_CHARACTER_SPEED * 2 : BL_CHARACTER_SPEED;
 
-		//ADD JUMP
+		//Jump/Fall
 
 		if(_input[4] == 1 && !_char->inAir){
 
@@ -118,7 +118,6 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 
 			//check current hexagon plus 6 neighbors for collision
 			for(i= 0; i < 7; i++){
-
 				//difference between odd/even rows
 
 				currentPos = convertPosition(_char, i);
@@ -284,9 +283,4 @@ bl_Point convertPosition(bl_Character *_char, int _pos){
 	}
 
 	return point;
-}
-
-int round(double number)
-{
-	return (number >= 0) ? (int)(number + 0.5) : (int)(number - 0.5);
 }

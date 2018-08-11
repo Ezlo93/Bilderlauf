@@ -60,10 +60,10 @@ typedef struct bl_tagBITMAPINFOHEADER
 
 
 
-unsigned char *LoadBitmapFile(char *filename, BL_BITMAPINFOHEADER *bitmapInfoHeader);
-bl_BMPData *CreateBMPData(unsigned char *bmpData, BL_BITMAPINFOHEADER *bitmapInfoHeader);
-int ColorCompare(bl_Color* a, bl_Color* b);
-void calculateHeight(bl_BMPData *data, float scale);
-void printBMPData(bl_BMPData *data);
+unsigned char *LoadBitmapFile(char *_filename, BL_BITMAPINFOHEADER *_bitmapInfoHeader);
+bl_BMPData *CreateBMPData(unsigned char *_bmpData, BL_BITMAPINFOHEADER *_bitmapInfoHeader);
+int ColorCompare(bl_Color* _a, bl_Color* _b);
+void calculateHeight(bl_BMPData *_data, float _scale);
+void printBMPData(bl_BMPData *_data);
 
 #endif

@@ -2,7 +2,7 @@
 #include "debug.h"
 
 //Creates a usable bl_BMPData structure from bmpData and infoheader
-bl_BMPData *CreateBMPData(unsigned char *bmpData, BL_BITMAPINFOHEADER *bitmapInfoHeader){
+bl_BMPData *CreateBMPData(unsigned char *_bmpData, BL_BITMAPINFOHEADER *_bitmapInfoHeader){
 
 	int i,j;
 	bl_Color min, max;
@@ -21,8 +21,8 @@ bl_BMPData *CreateBMPData(unsigned char *bmpData, BL_BITMAPINFOHEADER *bitmapInf
 	max.R = MIN_COLOR; max.G = MIN_COLOR; max.B = MIN_COLOR; 
 
 	//Set Width, Height
-	data->bmpHeight = bitmapInfoHeader->biHeight;
-	data->bmpWidth = bitmapInfoHeader->biWidth;
+	data->bmpHeight = _bitmapInfoHeader->biHeight;
+	data->bmpWidth = _bitmapInfoHeader->biWidth;
 
 
 	//Allocate memory for color array
@@ -33,13 +33,13 @@ bl_BMPData *CreateBMPData(unsigned char *bmpData, BL_BITMAPINFOHEADER *bitmapInf
 	}
 
 	//Fill the array
-	if ((bitmapInfoHeader->biWidth * 3) % 4 != 0) pad = 4 - ((bitmapInfoHeader->biWidth * 3) % 4);
+	if ((_bitmapInfoHeader->biWidth * 3) % 4 != 0) pad = 4 - ((_bitmapInfoHeader->biWidth * 3) % 4);
 
 	for(i = 0; i < data->bmpHeight; i++){
 		for(j = 0; j < data->bmpWidth; j++){
-			data->bmpData[i*data->bmpWidth+j].R = (float)bmpData[(i*data->bmpWidth+j)*3+(i*pad)]/255.f;
-			data->bmpData[i*data->bmpWidth+j].G = (float)bmpData[(i*data->bmpWidth+j)*3+(i*pad)+1]/255.f;
-			data->bmpData[i*data->bmpWidth+j].B = (float)bmpData[(i*data->bmpWidth+j)*3+(i*pad)+2]/255.f;
+			data->bmpData[i*data->bmpWidth+j].R = (float)_bmpData[(i*data->bmpWidth+j)*3+(i*pad)]/255.f;
+			data->bmpData[i*data->bmpWidth+j].G = (float)_bmpData[(i*data->bmpWidth+j)*3+(i*pad)+1]/255.f;
+			data->bmpData[i*data->bmpWidth+j].B = (float)_bmpData[(i*data->bmpWidth+j)*3+(i*pad)+2]/255.f;
 			data->bmpData[i*data->bmpWidth+j].Height = 0.f;
 
 			//Update min/max if necessary
@@ -70,45 +70,45 @@ bl_BMPData *CreateBMPData(unsigned char *bmpData, BL_BITMAPINFOHEADER *bitmapInf
 
 
 //Prints info about the BMPData structure
-void printBMPData(bl_BMPData *data){
+void printBMPData(bl_BMPData *_data){
 
 	printf("\nBMP DATA\n");
-	printf("WIDTH: %d, HEIGHT: %d\nMIN: %f:%f:%f\nMAX: %f:%f:%f\n", data->bmpWidth,data->bmpHeight, 
-		data->minColor.R,data->minColor.G,data->minColor.B,data->maxColor.R,data->maxColor.G, data->maxColor.B);
+	printf("WIDTH: %d, HEIGHT: %d\nMIN: %f:%f:%f\nMAX: %f:%f:%f\n", _data->bmpWidth,_data->bmpHeight, 
+		_data->minColor.R,_data->minColor.G,_data->minColor.B,_data->maxColor.R,_data->maxColor.G, _data->maxColor.B);
 
-	printf("SIZE: %.1f kb\n", (sizeof(bl_BMPData) + data->bmpHeight * data->bmpWidth * sizeof(bl_Color))/1024.f);
+	printf("SIZE: %.1f kb\n", (sizeof(bl_BMPData) + _data->bmpHeight * _data->bmpWidth * sizeof(bl_Color))/1024.f);
 
 }
 
 
 //Calculates the individual height of the hexagons/cubes
-void calculateHeight(bl_BMPData *data, float scale){
+void calculateHeight(bl_BMPData *_data, float _scale){
 	int i;
 	float c;
 
-	float max = (data->maxColor.R + data->maxColor.G + data->maxColor.B)/3;
-	float min = (data->minColor.R + data->minColor.G + data->minColor.B)/3;
+	float max = (_data->maxColor.R + _data->maxColor.G + _data->maxColor.B)/3;
+	float min = (_data->minColor.R + _data->minColor.G + _data->minColor.B)/3;
 
-	for(i = 0; i < data->bmpWidth*data->bmpHeight; i++){
+	for(i = 0; i < _data->bmpWidth*_data->bmpHeight; i++){
 		//Current color value
-		c = (data->bmpData[i].R +  data->bmpData[i].G + data->bmpData[i].B)/3.f;
+		c = (_data->bmpData[i].R +  _data->bmpData[i].G + _data->bmpData[i].B)/3.f;
 		//scale the value so max -> 0 height, min -> scale height
-		data->bmpData[i].Height = scale - ((c - min) / (max-min) * scale);
+		_data->bmpData[i].Height = _scale - ((c - min) / (max-min) * _scale);
 
 	}
 
 }
 
 //Adds all components of the colors and returns 0 if first is greater, 1 if second is greater
-int ColorCompare(bl_Color* a, bl_Color* b){
+int ColorCompare(bl_Color *_a, bl_Color *_b){
 
-	return (a->R + a->B + a->G) > (b->R + b->B + b->G) ? 0 : 1;
+	return (_a->R + _a->B + _a->G) > (_b->R + _b->B + _b->G) ? 0 : 1;
 
 }
 
 
 //Loads bmp file
-unsigned char *LoadBitmapFile(char *filename, BL_BITMAPINFOHEADER *bitmapInfoHeader)
+unsigned char *LoadBitmapFile(char *_filename, BL_BITMAPINFOHEADER *_bitmapInfoHeader)
 {
 	FILE *filePtr;
 	BL_BITMAPFILEHEADER bitmapFileHeader;
@@ -119,7 +119,7 @@ unsigned char *LoadBitmapFile(char *filename, BL_BITMAPINFOHEADER *bitmapInfoHea
 	int pad = 0, nextrow = 0, nextpadstep = 0;
 
 	//open filename in read binary mode
-	filePtr = fopen(filename,"rb");
+	filePtr = fopen(_filename,"rb");
 	if (filePtr == NULL)
 		return NULL;
 
@@ -134,15 +134,15 @@ unsigned char *LoadBitmapFile(char *filename, BL_BITMAPINFOHEADER *bitmapInfoHea
 	}
 
 	//read the bitmap info header
-	fread(bitmapInfoHeader, sizeof(BL_BITMAPINFOHEADER),1,filePtr);
+	fread(_bitmapInfoHeader, sizeof(BL_BITMAPINFOHEADER),1,filePtr);
 
 	//move file point to the beginning of bitmap data
 	fseek(filePtr, bitmapFileHeader.bOffBits, SEEK_SET);
 
 	//allocate enough memory for the bitmap image data
 	//CARE FOR PADDING (Lines must be % 32bits == 0 
-	if ((bitmapInfoHeader->biWidth * 3) % 4 != 0) pad = 4 - ((bitmapInfoHeader->biWidth * 3) % 4);
-	bmpSize = (bitmapInfoHeader->biHeight * bitmapInfoHeader->biWidth * 3) + (pad * bitmapInfoHeader->biHeight);
+	if ((_bitmapInfoHeader->biWidth * 3) % 4 != 0) pad = 4 - ((_bitmapInfoHeader->biWidth * 3) % 4);
+	bmpSize = (_bitmapInfoHeader->biHeight * _bitmapInfoHeader->biWidth * 3) + (pad * _bitmapInfoHeader->biHeight);
 	bitmapImage = (unsigned char*)malloc(bmpSize);
 
 	//verify memory allocation
@@ -171,7 +171,7 @@ unsigned char *LoadBitmapFile(char *filename, BL_BITMAPINFOHEADER *bitmapInfoHea
 	}
 #endif
 
-	nextpadstep = bitmapInfoHeader->biWidth*3;
+	nextpadstep = _bitmapInfoHeader->biWidth*3;
 	for (imageIdx = 0;imageIdx < bmpSize;imageIdx+=3)
 	{
 
@@ -179,7 +179,7 @@ unsigned char *LoadBitmapFile(char *filename, BL_BITMAPINFOHEADER *bitmapInfoHea
 		if(imageIdx != 0 && (imageIdx+3) % nextpadstep == 0){
 			imageIdx += pad;
 			nextrow++;
-			nextpadstep = (bitmapInfoHeader->biWidth*3*(nextrow+1) + nextrow*pad);
+			nextpadstep = (_bitmapInfoHeader->biWidth*3*(nextrow+1) + nextrow*pad);
 		}else{
 			//if not at padstep swap colors
 			tempRGB = bitmapImage[imageIdx];
@@ -193,17 +193,17 @@ unsigned char *LoadBitmapFile(char *filename, BL_BITMAPINFOHEADER *bitmapInfoHea
 
 #if DEBUG > 0
 	printf("BitmapInfoHeader:\n");
-	printf("\tbiSize:\t\t%d\n", bitmapInfoHeader->biSize);
-	printf("\tbiWidth:\t%d\n", bitmapInfoHeader->biWidth);
-	printf("\tbiHeight:\t%d\n", bitmapInfoHeader->biHeight);
-	printf("\tbiPlanes:\t%d\n", bitmapInfoHeader->biPlanes);
-	printf("\tbiBitcount:\t%d\n", bitmapInfoHeader->biBitCount);	
-	printf("\tbiCompression:\t%d\n", bitmapInfoHeader->biCompression);
-	printf("\tbiSizeImage:\t%d\n", bitmapInfoHeader->biSizeImage);
-	printf("\tbiXPelsPerMeter:%d\n", bitmapInfoHeader->biXPelsPerMeter);
-	printf("\tbiYPelsPerMeter:%d\n", bitmapInfoHeader->biYPelsPerMeter);
-	printf("\tbiClrUsed:\t%d\n", bitmapInfoHeader->biClrUsed);
-	printf("\tbiClrImportant:\t%d\n", bitmapInfoHeader->biClrImportant);
+	printf("\tbiSize:\t\t%d\n", _bitmapInfoHeader->biSize);
+	printf("\tbiWidth:\t%d\n", _bitmapInfoHeader->biWidth);
+	printf("\tbiHeight:\t%d\n", _bitmapInfoHeader->biHeight);
+	printf("\tbiPlanes:\t%d\n", _bitmapInfoHeader->biPlanes);
+	printf("\tbiBitcount:\t%d\n", _bitmapInfoHeader->biBitCount);	
+	printf("\tbiCompression:\t%d\n", _bitmapInfoHeader->biCompression);
+	printf("\tbiSizeImage:\t%d\n", _bitmapInfoHeader->biSizeImage);
+	printf("\tbiXPelsPerMeter:%d\n", _bitmapInfoHeader->biXPelsPerMeter);
+	printf("\tbiYPelsPerMeter:%d\n", _bitmapInfoHeader->biYPelsPerMeter);
+	printf("\tbiClrUsed:\t%d\n", _bitmapInfoHeader->biClrUsed);
+	printf("\tbiClrImportant:\t%d\n", _bitmapInfoHeader->biClrImportant);
 	printf("\tbmpSize:\t%d\n", bmpSize);
 	printf("\tPadding:\t%d\n", pad);
 #endif

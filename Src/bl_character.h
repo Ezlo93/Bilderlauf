@@ -5,7 +5,7 @@
 #include "bl_bmp.h"
 #include <math.h>
 
-#define BL_CHARACTER_SPEED 8.5f 
+#define BL_CHARACTER_SPEED 12.f 
 #define BL_CHARACTER_HEIGHT 4.f
 #define BL_CHARACTER_CLIMB_THRESHOLD .8f
 #define BL_CHARACTER_JUMP_VELOCITY 12.f
@@ -38,7 +38,6 @@ typedef struct{
 bl_Character* bl_CreateCharacter(float _X, float _Y, float _Z, float _height, bl_Camera* _camera);
 void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_BMPData *_data,
 	float _hexasize);
-int round(double number);
 int pointHexagonCollision(float _hexacenterx, float _hexacentery, float _size, float _pointx, float _pointy);
 bl_Point convertPosition(bl_Character *_char, int _pos);
 
