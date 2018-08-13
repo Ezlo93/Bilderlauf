@@ -273,8 +273,7 @@ void draw(void)
 	int i, j, k;
 	float cullx, cully, cullz, opacity = 1.f, distance;
 	double links, rechts, oben, unten;
-	double radians;
-	double eyeOffset = 0.8;
+	double eyeOffset = 0.15;
 
 	// Buffer for writing and reading
 	glDrawBuffer(GL_BACK);
@@ -289,17 +288,17 @@ void draw(void)
 			glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE);
 		}
 		else {
+			glDrawBuffer(GL_BACK);
 			glColorMask(GL_FALSE, GL_FALSE, GL_TRUE, GL_TRUE);
-
 		}
-
+		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		rechts = winWidth / 200 + k == 0 ? eyeOffset : -eyeOffset;
 		links = winWidth / -200 + k == 0 ? eyeOffset : -eyeOffset;
 		oben = winHeight / 200;
 		unten = -oben;
-		glFrustum(links, rechts, oben, unten, 12, 12.5);
+		glFrustum(links, rechts, oben, unten, 9.7, 10.3);
 		gluPerspective(60, winWidth / winHeight, 0.1, fern);
 
 		glTranslatef(k == 0 ? eyeOffset : -eyeOffset, 0.0, 0.0);
@@ -318,7 +317,47 @@ void draw(void)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glLineWidth(1.f);
 		glFlush();
+		for (i = 0; i < bl_PictureData->bmpHeight; i++) {
+			for (j = 0; j < bl_PictureData->bmpWidth; j++) {
 
+				//frustum culling
+				//position of hexagon in question
+				cullx = bl_hexawidth * j;
+				cully = bl_PictureData->bmpData[bl_PictureData->bmpWidth*i + j].Height;
+				cullz = bl_hexavert * i;
+
+				//translate x of odd rows
+				if (i % 2 == 1) {
+					cullx -= bl_hexawidth / 2;
+				}
+
+				//draw distance
+				distance = (float)(sqrt(pow((double)(cullx - bl_player->x), 2) + (pow((double)(cullz - bl_player->y), 2))));
+
+				if (distance > DRAWDISTANCE) {
+					continue;
+				}
+				else if (distance > (DRAWDISTANCE - DRAWDISTANCE_BLEND_DISTANCE)) {
+					opacity = (DRAWDISTANCE - distance) / DRAWDISTANCE_BLEND_DISTANCE;
+				}
+				else {
+					opacity = 1.f;
+				}
+
+				if (SphereInFrustum(cullx, cully, cullz, bl_hexasize*HEXAGONMAXHEIGHT / 2) && !wireframemode) {
+
+					glPushMatrix();
+					if (drawMode == DRAW_HEXAGON) {
+						drawHexagon(j, i, bl_PictureData, 0, opacity);
+					}
+					else if (drawMode == DRAW_CUBE) {
+						drawCube(j, i, bl_PictureData);
+					}
+					glPopMatrix();
+
+				}
+			}
+		}
 		glAccum(GL_ACCUM, 1.0);
 	}
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -628,14 +667,14 @@ int main(int argc, char **argv)
 	glEnable(GL_DEPTH_TEST);
 
 	glEnable(GL_BLEND);
-	//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 
 	//enable face culling
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	glClearColor(0, 0.75f, 0.75f, 0.f);
+	//glClearColor(0, 0.75f, 0.75f, 0.f);
 
 	glutDisplayFunc(draw);
 	glutReshapeFunc(reshaping);
