@@ -275,93 +275,121 @@ void draw(void)
 	double links, rechts, oben, unten;
 	double eyeOffset = 0.15;
 
-	// Buffer for writing and reading
-	glDrawBuffer(GL_BACK);
-	glReadBuffer(GL_BACK);
+	if (stereo) {
+		// Buffer for writing and reading
+		glDrawBuffer(GL_BACK);
+		glReadBuffer(GL_BACK);
 
-	glClear(GL_ACCUM_BUFFER_BIT);
-	//Start render
-	for (k = 0; k < 2; k++) {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		if (k == 0) {
-			glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE);
-		}
-		else {
-			glDrawBuffer(GL_BACK);
-			glColorMask(GL_FALSE, GL_FALSE, GL_TRUE, GL_TRUE);
-		}
-		
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		rechts = winWidth / 200 + k == 0 ? eyeOffset : -eyeOffset;
-		links = winWidth / -200 + k == 0 ? eyeOffset : -eyeOffset;
-		oben = winHeight / 200;
-		unten = -oben;
-		glFrustum(links, rechts, oben, unten, 9.7, 10.3);
-		gluPerspective(60, winWidth / winHeight, 0.1, fern);
+		glClear(GL_ACCUM_BUFFER_BIT);
+		//Start render
+		for (k = 0; k < 2; k++) {
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+			if (k == 0) {
+				glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE);
+			}
+			else {
+				glDrawBuffer(GL_BACK);
+				glColorMask(GL_FALSE, GL_FALSE, GL_TRUE, GL_TRUE);
+			}
 
-		glTranslatef(k == 0 ? eyeOffset : -eyeOffset, 0.0, 0.0);
-		bl_CameraUpdate(cameras[cameraCurrent]);
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			rechts = winWidth / 200 + k == 0 ? eyeOffset : -eyeOffset;
+			links = winWidth / -200 + k == 0 ? eyeOffset : -eyeOffset;
+			oben = winHeight / 200;
+			unten = -oben;
+			glFrustum(links, rechts, oben, unten, 9.7, 10.3);
+			gluPerspective(60, winWidth / winHeight, 0.1, fern);
 
-		gluLookAt
-		(
-			cameras[cameraCurrent]->Position.X, cameras[cameraCurrent]->Position.Y, cameras[cameraCurrent]->Position.Z,
-			cameras[cameraCurrent]->Position.X + cameras[cameraCurrent]->LookAt.X,
-			cameras[cameraCurrent]->Position.Y + cameras[cameraCurrent]->LookAt.Y,
-			cameras[cameraCurrent]->Position.Z + cameras[cameraCurrent]->LookAt.Z,
-			0, 1, 0
-		);
+			glTranslatef(k == 0 ? eyeOffset : -eyeOffset, 0.0, 0.0);
+			bl_CameraUpdate(cameras[cameraCurrent]);
 
-		glMatrixMode(GL_MODELVIEW);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glLineWidth(1.f);
-		glFlush();
-		for (i = 0; i < bl_PictureData->bmpHeight; i++) {
-			for (j = 0; j < bl_PictureData->bmpWidth; j++) {
+			gluLookAt
+			(
+				cameras[cameraCurrent]->Position.X, cameras[cameraCurrent]->Position.Y, cameras[cameraCurrent]->Position.Z,
+				cameras[cameraCurrent]->Position.X + cameras[cameraCurrent]->LookAt.X,
+				cameras[cameraCurrent]->Position.Y + cameras[cameraCurrent]->LookAt.Y,
+				cameras[cameraCurrent]->Position.Z + cameras[cameraCurrent]->LookAt.Z,
+				0, 1, 0
+			);
 
-				//frustum culling
-				//position of hexagon in question
-				cullx = bl_hexawidth * j;
-				cully = bl_PictureData->bmpData[bl_PictureData->bmpWidth*i + j].Height;
-				cullz = bl_hexavert * i;
+			glMatrixMode(GL_MODELVIEW);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glLineWidth(1.f);
+			glFlush();
+			for (i = 0; i < bl_PictureData->bmpHeight; i++) {
+				for (j = 0; j < bl_PictureData->bmpWidth; j++) {
 
-				//translate x of odd rows
-				if (i % 2 == 1) {
-					cullx -= bl_hexawidth / 2;
-				}
+					//frustum culling
+					//position of hexagon in question
+					cullx = bl_hexawidth * j;
+					cully = bl_PictureData->bmpData[bl_PictureData->bmpWidth*i + j].Height;
+					cullz = bl_hexavert * i;
 
-				//draw distance
-				distance = (float)(sqrt(pow((double)(cullx - bl_player->x), 2) + (pow((double)(cullz - bl_player->y), 2))));
-
-				if (distance > DRAWDISTANCE) {
-					continue;
-				}
-				else if (distance > (DRAWDISTANCE - DRAWDISTANCE_BLEND_DISTANCE)) {
-					opacity = (DRAWDISTANCE - distance) / DRAWDISTANCE_BLEND_DISTANCE;
-				}
-				else {
-					opacity = 1.f;
-				}
-
-				if (SphereInFrustum(cullx, cully, cullz, bl_hexasize*HEXAGONMAXHEIGHT / 2) && !wireframemode) {
-
-					glPushMatrix();
-					if (drawMode == DRAW_HEXAGON) {
-						drawHexagon(j, i, bl_PictureData, 0, opacity);
+					//translate x of odd rows
+					if (i % 2 == 1) {
+						cullx -= bl_hexawidth / 2;
 					}
-					else if (drawMode == DRAW_CUBE) {
-						drawCube(j, i, bl_PictureData);
-					}
-					glPopMatrix();
 
+					//draw distance
+					distance = (float)(sqrt(pow((double)(cullx - bl_player->x), 2) + (pow((double)(cullz - bl_player->y), 2))));
+
+					if (distance > DRAWDISTANCE) {
+						continue;
+					}
+					else if (distance > (DRAWDISTANCE - DRAWDISTANCE_BLEND_DISTANCE)) {
+						opacity = (DRAWDISTANCE - distance) / DRAWDISTANCE_BLEND_DISTANCE;
+					}
+					else {
+						opacity = 1.f;
+					}
+
+					if (SphereInFrustum(cullx, cully, cullz, bl_hexasize*HEXAGONMAXHEIGHT / 2) && !wireframemode) {
+
+						glPushMatrix();
+						if (drawMode == DRAW_HEXAGON) {
+							drawHexagon(j, i, bl_PictureData, 0, opacity);
+						}
+						else if (drawMode == DRAW_CUBE) {
+							drawCube(j, i, bl_PictureData);
+						}
+						glPopMatrix();
+
+					}
 				}
 			}
+			glAccum(GL_ACCUM, 1.0);
 		}
-		glAccum(GL_ACCUM, 1.0);
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glAccum(GL_RETURN, 1.0);
 	}
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glAccum(GL_RETURN, 1.0);
+	else {
+		glClear(GL_ACCUM_BUFFER_BIT);
+		//Start render
+		
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			
+			gluPerspective(60, winWidth / winHeight, 0.1, fern);
+
+			bl_CameraUpdate(cameras[cameraCurrent]);
+
+			gluLookAt
+			(
+				cameras[cameraCurrent]->Position.X, cameras[cameraCurrent]->Position.Y, cameras[cameraCurrent]->Position.Z,
+				cameras[cameraCurrent]->Position.X + cameras[cameraCurrent]->LookAt.X,
+				cameras[cameraCurrent]->Position.Y + cameras[cameraCurrent]->LookAt.Y,
+				cameras[cameraCurrent]->Position.Z + cameras[cameraCurrent]->LookAt.Z,
+				0, 1, 0
+			);
+
+			glMatrixMode(GL_MODELVIEW);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glLineWidth(1.f);
+	}
 
 	for (i = 0; i < bl_PictureData->bmpHeight; i++) {
 		for (j = 0; j < bl_PictureData->bmpWidth; j++) {
@@ -453,7 +481,6 @@ void draw(void)
 		}
 	}
 	glutSwapBuffers();
-
 }
 
 
@@ -552,6 +579,7 @@ void visibility(int visible) {
 		timer(0);
 	}
 }
+
 
 
 /*************************************************************************/
