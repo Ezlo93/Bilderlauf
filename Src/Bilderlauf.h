@@ -16,8 +16,8 @@
 #include "bl_camera.h"
 #include "bl_character.h"
 
-#define MVERSION 0
-#define SVERSION 9
+#define MVERSION 1
+#define SVERSION 0
 
 #define FILENAMEBUFFER 100
 
@@ -27,7 +27,7 @@
 #define CAMERAMAX 1
 #define DRAWDISTANCE 112.f
 #define DRAWDISTANCE_BLEND_DISTANCE 16.f
-#define FPS 60.f
+#define FPS 144.f
 
 #define HEXAGONOFFSET 0.1f
 #define HEXAGONSIZE 2.5f
@@ -47,6 +47,8 @@ void key(unsigned char _key, int _x, int _y);
 void releaseKey(unsigned char _key, int _x, int _y);
 void mouseMove(int _x, int _y);
 
+void reshaping(int _width, int _height);
+void visibility(int _visible);
 void timer(int _a);
 void ExtractFrustum();
 int SphereInFrustum( float _x, float _y, float _z, float _radius);

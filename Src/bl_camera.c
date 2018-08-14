@@ -15,11 +15,11 @@ bl_Camera *CreateCamera(bl_CameraPosition _cameraPosition, int _mode){
 
 	//Set Mode, Topview is default
 	switch(_mode){
-		case 0: _camera->Mode = BL_CAM_TOP; break;
-		case 1: _camera->Mode = BL_CAM_FPP; break;
-		default: printf("Unsupported camera mode %d!\n", _mode);
-				 _camera->Mode = BL_CAM_TOP;
-				 break;
+	case 0: _camera->Mode = BL_CAM_TOP; break;
+	case 1: _camera->Mode = BL_CAM_FPP; break;
+	default: printf("Unsupported camera mode %d!\n", _mode);
+		_camera->Mode = BL_CAM_TOP;
+		break;
 	}
 
 	//Set LookAt depending on mode
@@ -62,17 +62,17 @@ void bl_CameraRotatePitch(bl_Camera *_camera, float _angle){
 
 	_camera->pitch += _angle;
 
-    if(_camera->pitch < -limit)
-        _camera->pitch = -limit;
+	if(_camera->pitch < -limit)
+		_camera->pitch = -limit;
 
-    if(_camera->pitch > limit)
-        _camera->pitch = limit;
+	if(_camera->pitch > limit)
+		_camera->pitch = limit;
 
 }
 
 //Left/Right Rotation of the _camera
 void bl_CameraRotateYaw(bl_Camera *_camera, float _angle){
-	
+
 	_camera->yaw = (float)fmod(_camera->yaw+_angle,(float)(2.f*M_PI));
 
 

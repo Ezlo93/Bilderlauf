@@ -46,16 +46,16 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 
 		if(_input[4] == 1 && !_char->inAir){
 
-				_char->inAir = 1;
-				_char->airTime = 0;
-				_char->zVelocity = _char->isRunning ? BL_CHARACTER_JUMP_VELOCITY * 1.5f : BL_CHARACTER_JUMP_VELOCITY;
-				_char->zOrigin = _char->z;
+			_char->inAir = 1;
+			_char->airTime = 0;
+			_char->zVelocity = _char->isRunning ? BL_CHARACTER_JUMP_VELOCITY * 1.5f : BL_CHARACTER_JUMP_VELOCITY;
+			_char->zOrigin = _char->z;
 
 		}
 
 		if(_char->inAir){
 			_char->airTime += _deltaTime;
-			bl_movez = (_char->zVelocity * _char->airTime) - (GRAVITY/2.f * _char->airTime * _char->airTime); 
+			bl_movez = (_char->zVelocity * _char->airTime) - (GRAVITY * _char->airTime * _char->airTime); 
 		}
 
 		//W A S D movement
@@ -197,11 +197,11 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 
 		//check if player moved from a higher to a lower hexagon / is falling
 		if(!_char->inAir && _char->z > _data->bmpData[_data->bmpWidth*_char->positionOnGridY+_char->positionOnGridX].Height){
-			
-				_char->inAir = 1;
-				_char->airTime = 0;
-				_char->zVelocity = 0;
-				_char->zOrigin = _char->z;
+
+			_char->inAir = 1;
+			_char->airTime = 0;
+			_char->zVelocity = 0;
+			_char->zOrigin = _char->z;
 		}
 
 
@@ -264,7 +264,7 @@ bl_Point convertPosition(bl_Character *_char, int _pos){
 		point.x.pInt = _char->positionOnGridX+1;
 		point.y.pInt = _char->positionOnGridY;
 	}else{
-		//odd/even row for top and bottom heagons
+		//odd/even row for top and bottom hexagons
 		if(_char->positionOnGridY % 2 == 0){
 			switch(_pos){
 			case 0: point.x.pInt = _char->positionOnGridX; point.y.pInt = _char->positionOnGridY-1; break;

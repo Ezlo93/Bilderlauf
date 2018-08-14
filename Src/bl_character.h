@@ -8,8 +8,8 @@
 #define BL_CHARACTER_SPEED 12.f 
 #define BL_CHARACTER_HEIGHT 4.f
 #define BL_CHARACTER_CLIMB_THRESHOLD .8f
-#define BL_CHARACTER_JUMP_VELOCITY 12.f
-#define GRAVITY 9.81f * 1.3f
+#define BL_CHARACTER_JUMP_VELOCITY 18.f
+#define GRAVITY 9.81f
 
 typedef struct{
 	float x,y,z;

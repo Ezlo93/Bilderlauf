@@ -1,4 +1,4 @@
-﻿Der Buildvorgang wurde am 11.08.2018 16:25:13 gestartet.
+﻿Der Buildvorgang wurde am 14.08.2018 17:37:52 gestartet.
      1>Projekt "C:\VSProjects\Bilderlauf\Debug\Debug.vcxproj" auf Knoten "2", build Ziel(e).
      1>InitializeBuildStatus:
          "..\tmp\Debug.unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
@@ -8,8 +8,8 @@
          bl_camera.c
          bl_bmp.c
          Bilderlauf.c
-     1>c:\vsprojects\bilderlauf\src\bilderlauf.c(369): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[5]' unterschiedlich
-     1>c:\vsprojects\bilderlauf\src\bilderlauf.c(369): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
+     1>c:\vsprojects\bilderlauf\src\bilderlauf.c(435): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[5]' unterschiedlich
+     1>c:\vsprojects\bilderlauf\src\bilderlauf.c(435): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
          Code wird generiert...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\Exc\Bilderlauf.exe" /NOLOGO /LIBPATH:..\..\_Data /LIBPATH:..\..\_Libs /LIBPATH:..\..\_Src /LIBPATH:..\..\_Dat OpenGL32.Lib GLU32.Lib GLUT32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"..\tmp\Bilderlauf.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\VSProjects\Bilderlauf\Exc\Bilderlauf.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\Exc\Bilderlauf.lib" /MACHINE:X86 ..\tmp\Bilderlauf.obj
@@ -27,4 +27,4 @@
 
 Das Erstellen war erfolgreich.
 
-Verstrichene Zeit 00:00:01.36
+Verstrichene Zeit 00:00:01.42
