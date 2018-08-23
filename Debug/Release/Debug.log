@@ -1,24 +1,24 @@
-﻿Der Buildvorgang wurde am 14.08.2018 17:37:34 gestartet.
+﻿Der Buildvorgang wurde am 23.08.2018 20:53:38 gestartet.
      1>Projekt "C:\VSProjects\Bilderlauf\Debug\Debug.vcxproj" auf Knoten "2", build Ziel(e).
      1>InitializeBuildStatus:
          "Release\Debug.unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt ..\Src\Bilderlauf.c ..\Src\bl_bmp.c ..\Src\bl_camera.c ..\Src\bl_character.c
          Bilderlauf.c
-     1>..\Src\Bilderlauf.c(435): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[5]' unterschiedlich
-     1>..\Src\Bilderlauf.c(435): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
-     1>..\Src\Bilderlauf.c(467): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(454): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[5]' unterschiedlich
+     1>..\Src\Bilderlauf.c(454): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
+     1>..\Src\Bilderlauf.c(486): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371): Siehe Deklaration von 'sprintf'
-     1>..\Src\Bilderlauf.c(472): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-     1>..\Src\Bilderlauf.c(483): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(491): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(502): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string.h(197): Siehe Deklaration von 'strtok'
-     1>..\Src\Bilderlauf.c(510): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(529): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234): Siehe Deklaration von 'fopen'
-     1>..\Src\Bilderlauf.c(514): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(533): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371): Siehe Deklaration von 'sprintf'
-     1>..\Src\Bilderlauf.c(515): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(534): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234): Siehe Deklaration von 'fopen'
-     1>..\Src\Bilderlauf.c(521): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>..\Src\Bilderlauf.c(540): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371): Siehe Deklaration von 'sprintf'
          bl_bmp.c
      1>..\Src\bl_bmp.c(122): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
@@ -42,4 +42,4 @@
 
 Das Erstellen war erfolgreich.
 
-Verstrichene Zeit 00:00:01.48
+Verstrichene Zeit 00:00:01.22

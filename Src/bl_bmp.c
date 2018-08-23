@@ -140,7 +140,7 @@ unsigned char *LoadBitmapFile(char *_filename, BL_BITMAPINFOHEADER *_bitmapInfoH
 	fseek(filePtr, bitmapFileHeader.bOffBits, SEEK_SET);
 
 	//allocate enough memory for the bitmap image data
-	//CARE FOR PADDING (Lines must be % 32bits == 0 
+	//CARE FOR PADDING (Lines must be % 32bits == 0)
 	if ((_bitmapInfoHeader->biWidth * 3) % 4 != 0) pad = 4 - ((_bitmapInfoHeader->biWidth * 3) % 4);
 	bmpSize = (_bitmapInfoHeader->biHeight * _bitmapInfoHeader->biWidth * 3) + (pad * _bitmapInfoHeader->biHeight);
 	bitmapImage = (unsigned char*)malloc(bmpSize);

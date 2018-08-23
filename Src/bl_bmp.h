@@ -8,11 +8,13 @@
 #define MAX_COLOR 1.f
 #define MIN_COLOR 0.f
 
+//stores data of one pixel
 typedef struct{
 	float R,G,B;
 	float Height;
 } bl_Color;
 
+//stores data of all pixels + meta information
 typedef struct {
 	bl_Color minColor;
 	bl_Color maxColor; 

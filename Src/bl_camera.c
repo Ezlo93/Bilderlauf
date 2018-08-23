@@ -2,33 +2,33 @@
 #include "debug.h"
 
 bl_Camera *CreateCamera(bl_CameraPosition _cameraPosition, int _mode){
-	bl_Camera* _camera;
+	bl_Camera* camera;
 
 	//Allocate memory for _camera
-	_camera = (bl_Camera*) malloc(sizeof(bl_Camera));
-	if(_camera == NULL){
+	camera = (bl_Camera*) malloc(sizeof(bl_Camera));
+	if(camera == NULL){
 		perror("Allocating memory for camera failed!");
 		exit(10);
 	}
 
-	_camera->Position = _cameraPosition;
+	camera->Position = _cameraPosition;
 
 	//Set Mode, Topview is default
 	switch(_mode){
-	case 0: _camera->Mode = BL_CAM_TOP; break;
-	case 1: _camera->Mode = BL_CAM_FPP; break;
+	case 0: camera->Mode = BL_CAM_TOP; break;
+	case 1: camera->Mode = BL_CAM_FPP; break;
 	default: printf("Unsupported camera mode %d!\n", _mode);
-		_camera->Mode = BL_CAM_TOP;
+		camera->Mode = BL_CAM_TOP;
 		break;
 	}
 
 	//Set LookAt depending on mode
-	_camera->LookAt = _camera->Position;
+	camera->LookAt = camera->Position;
 
-	_camera->pitch = 0;
-	_camera->yaw = 0;
+	camera->pitch = 0;
+	camera->yaw = 0;
 
-	return _camera;
+	return camera;
 }
 
 //Creates a bl_CameraPosition struct with X Y Z

@@ -16,6 +16,7 @@
 #include "bl_camera.h"
 #include "bl_character.h"
 
+
 #define MVERSION 1
 #define SVERSION 0
 
@@ -24,17 +25,22 @@
 #define ESC        27
 #define SPACE	   32
 
+//render properties
 #define CAMERAMAX 1
 #define DRAWDISTANCE 112.f
 #define DRAWDISTANCE_BLEND_DISTANCE 16.f
-#define FPS 144.f
+#define FPS_60 60.f
+#define FPS_144 144.f
 
+//hexagon properties
 #define HEXAGONOFFSET 0.1f
 #define HEXAGONSIZE 2.5f
 #define HEXAGONMAXHEIGHT 10.f
 
+
 enum {X=0, Y=1, Z=2, W=3};
 enum {DRAW_HEXAGON=0};
+
 
 
 int main(int argc, char **argv);

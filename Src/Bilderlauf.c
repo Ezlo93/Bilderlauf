@@ -9,6 +9,7 @@
 int drawMode = DRAW_HEXAGON;
 int init_time, final_time, frame_count=0;
 int deltaTime, deltaTimeStart, deltaTimeStartOld;
+float fps_limit;
 int input[5];
 float frustum[6][4];
 
@@ -126,8 +127,11 @@ void drawHexagon(int _x, int _y, bl_BMPData *_data, int _mode, float _opacity)
 
 	//Translation & Color of Hexagon
 	glTranslatef(transX, transY, transZ);
+	//if(_mode != 3){
 	glColor4f(_data->bmpData[_data->bmpWidth*_y+_x].R,_data->bmpData[_data->bmpWidth*_y+_x].G,_data->bmpData[_data->bmpWidth*_y+_x].B, _opacity);
-
+	//}else{
+	//glColor4f(255,255,255,_opacity);
+	//}
 
 	//Change height of hexagon
 
@@ -165,7 +169,7 @@ void drawHexagon(int _x, int _y, bl_BMPData *_data, int _mode, float _opacity)
 	//color of the edge
 	if(_mode == 2){
 		glColor4f(_data->bmpData[_data->bmpWidth*_y+_x].R,_data->bmpData[_data->bmpWidth*_y+_x].G,_data->bmpData[_data->bmpWidth*_y+_x].B, _opacity);
-	}else if(_mode == 0){
+	}else if(_mode == 0 || _mode == 3){
 		glColor4f(0,0,0,_opacity);
 	}else{
 		return;
@@ -201,19 +205,25 @@ void draw(void)
 { 
 	int i,j,k, mode = 0;
 	float cullx, cully, cullz, opacity = 1.f, distance;
-	double left, right, top, bottom, eyeOffset = 0.15;
+	//double left, right, top, bottom;
+	double eyeOffset = 0.15, eyeX, eyeY;
 
 	/*
 	mode:
 	- 0 filled hexagons and edgecoloring
 	- 1 only filled hexagons
 	- 2 colored wireframe
+	- 3 anaglyph
 	*/
 
 	if(wireframemode){
 		mode = 2;
 	}else if(!edgecoloring){
 		mode = 1;
+	}
+	
+	if(anaglyph){
+		mode = 3;
 	}
 
 	//run render once or twice, depends on stereoscopic
@@ -240,14 +250,22 @@ void draw(void)
 
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			right = winWidth / 200 + k == 0 ? eyeOffset : -eyeOffset;
-			left = winWidth / -200 + k == 0 ? eyeOffset : -eyeOffset;
-			top = winHeight / 200;
-			bottom = -top;
-			glFrustum(left, right, top, bottom, 9.7, 10.3);
+
 			gluPerspective(60, winWidth / winHeight, 0.1, fern);
 
-			glTranslatef(k == 0 ? eyeOffset : -eyeOffset, 0.0, 0.0);
+
+			if(k == 0){
+				eyeX = (float)(cos(cameras[cameraCurrent]->yaw + (M_PI * 1.5f))) * eyeOffset;
+				eyeY = (float)(-sin(cameras[cameraCurrent]->yaw + (M_PI * 1.5f))) * eyeOffset;
+				glTranslatef(eyeX, 0.0, eyeY);
+			}else{
+				eyeX = (float)(cos(cameras[cameraCurrent]->yaw + (M_PI * 0.5f))) * eyeOffset;
+				eyeY = (float)(-sin(cameras[cameraCurrent]->yaw + (M_PI * 0.5f))) * eyeOffset;
+				glTranslatef(eyeX, 0.0, eyeY);
+			}
+
+			printf("K %d: %f %f\n", k, eyeX, eyeY);
+
 			bl_CameraUpdate(cameras[cameraCurrent]);
 
 			gluLookAt
@@ -322,7 +340,7 @@ void draw(void)
 
 					glPushMatrix();
 					if(drawMode == DRAW_HEXAGON){
-						drawHexagon(j,i, bl_PictureData,anaglyph? 0:mode,opacity);
+						drawHexagon(j,i, bl_PictureData,mode,opacity);
 					}
 					glPopMatrix();
 
@@ -392,6 +410,7 @@ void releaseKey(unsigned char _key, int _x, int _y){
 	case '2': edgecoloring = !edgecoloring;break;
 	case '3': anaglyph = !anaglyph;break;
 	case '4': bl_player->isRunning = !bl_player->isRunning; break;
+	case '5': fps_limit = fps_limit == FPS_60 ? FPS_144 : FPS_60;
 	}
 
 }
@@ -432,9 +451,9 @@ void timer(int _a) {
 	deltaTime = deltaTimeStart - deltaTimeStartOld;
 	deltaTimeStartOld = deltaTimeStart;
 
-	bl_UpdateCharacter(bl_player, &input, 1/FPS, bl_PictureData, bl_hexasize);
+	bl_UpdateCharacter(bl_player, &input, 1/fps_limit, bl_PictureData, bl_hexasize);
 	glutPostRedisplay();
-	glutTimerFunc(1000/FPS, timer,0);
+	glutTimerFunc(1000/fps_limit, timer,0);
 
 }
 
@@ -562,6 +581,8 @@ int main(int argc, char **argv)
 	//Character init
 	bl_player =	bl_CreateCharacter(0,0,bl_PictureData->bmpData[0].Height, BL_CHARACTER_HEIGHT , cameras[0]);
 
+	fps_limit = FPS_60;
+
 	//Glut Init
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE |  GLUT_DEPTH);
@@ -588,7 +609,7 @@ int main(int argc, char **argv)
 	//Glut input
 	glutMotionFunc(mouseMove);
 	glutPassiveMotionFunc(mouseMove);
-	glutTimerFunc(1000/FPS, timer, 0);
+	glutTimerFunc(1000/fps_limit, timer, 0);
 
 	glutSetCursor(GLUT_CURSOR_NONE);
 

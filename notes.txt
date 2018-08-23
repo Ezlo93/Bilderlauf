@@ -9,4 +9,4 @@ Roadmap:
 0.7: Maus zum Bewegen der Kamera --done
 0.8: Laufen des Spielers über das Bild --done
 0.9: Draw Distance --done
-1.0: Stereoskopie
+1.0: Stereoskopie --done

@@ -1,8 +1,15 @@
 #include "bl_character.h"
 #include "debug.h"
 
+
+//returns bl_character structure with given values
 bl_Character* bl_CreateCharacter(float _X, float _Y, float _Z, float _height, bl_Camera* _camera){
 	bl_Character* c = (bl_Character*)malloc(sizeof(bl_Character));
+
+	if(c == NULL){
+		perror("Allocating memory for character failed!");
+		exit(10);
+	}
 
 	c->x = _X;
 	c->y = _Y;
@@ -20,7 +27,7 @@ bl_Character* bl_CreateCharacter(float _X, float _Y, float _Z, float _height, bl
 	return c;
 }
 
-
+//updates the characters position according to the user input and possible collision
 void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_BMPData *_data,
 	float _hexasize){
 
@@ -32,15 +39,15 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 		_hexaheight = _hexasize*2; 
 		_hexawidth = (float)(sqrt(3.f)) * _hexasize;
 
-
-		//check if wasd movement
+		//check for wasd movement
 		for(i = 0; i < 4; i++ ){
 			if(_input[i] == 1){
 				movement = 1; break;
 			}
 		}
 
-		char_actual_speed = _char->isRunning ? BL_CHARACTER_SPEED * 2 : BL_CHARACTER_SPEED;
+		//character speed depends on toggle isRunning
+		char_actual_speed = _char->isRunning ? BL_CHARACTER_SPEED * 1.8f : BL_CHARACTER_SPEED;
 
 		//Jump/Fall
 
@@ -48,17 +55,20 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 
 			_char->inAir = 1;
 			_char->airTime = 0;
-			_char->zVelocity = _char->isRunning ? BL_CHARACTER_JUMP_VELOCITY * 1.5f : BL_CHARACTER_JUMP_VELOCITY;
+			//jump velocity also depends on toggle isRunning
+			_char->zVelocity = _char->isRunning ? BL_CHARACTER_JUMP_VELOCITY * 2 : BL_CHARACTER_JUMP_VELOCITY;
 			_char->zOrigin = _char->z;
 
 		}
 
+		//calculat new z axis movement if in air
 		if(_char->inAir){
 			_char->airTime += _deltaTime;
 			bl_movez = (_char->zVelocity * _char->airTime) - (GRAVITY * _char->airTime * _char->airTime); 
 		}
 
-		//W A S D movement
+
+		/*W A S D movement*/
 
 		//W + strafe A D
 
@@ -77,7 +87,7 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 				}
 			}else if(_input[1] == 1){
 
-				//S + strafe A D
+		//S + strafe A D
 
 				if(_input[3] == 1){			//+ right strafe
 					yaw_inc = M_PI*0.75f;
@@ -90,6 +100,8 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 				if(_input[3] == _input[2]){ //normal or both strafes
 					yaw_inc = M_PI;
 				}
+
+		//only strafe
 			}else if(_input[2] == 1){
 				//strafe left
 
@@ -107,7 +119,6 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 
 
 			//check collision
-
 
 			collision = 0;
 			intendedMove.x.pFloat = _char->x + bl_movex;
@@ -168,17 +179,16 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 					){
 
 						collision=-1;
-						//
 
 				}
 			}
 
+			//no collision -> set position to new x y
 			if(collision != -1){
 				_char->positionOnGridX = gridPos.x.pInt;
 				_char->positionOnGridY = gridPos.y.pInt;
 
-
-				//set position
+				
 				_char->x = intendedMove.x.pFloat;
 				_char->y = intendedMove.y.pFloat;
 			}
@@ -228,8 +238,6 @@ int pointHexagonCollision(float _hexacenterx, float _hexacentery, float _size, f
 		vertices[i].y.pFloat = _hexacentery+_size * (float)(sin(angle));
 
 	}
-
-	//
 
 	next = 0;
 	for(current = 0; current < 6; current++){
