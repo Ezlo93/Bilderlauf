@@ -27,7 +27,8 @@
 
 //render properties
 #define CAMERAMAX 1
-#define DRAWDISTANCE 112.f
+#define DRAWDISTANCE 132.f
+#define DRAWDISTANCE_GRID 35
 #define DRAWDISTANCE_BLEND_DISTANCE 16.f
 #define FPS_60 60.f
 #define FPS_144 144.f

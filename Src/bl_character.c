@@ -47,7 +47,7 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 		}
 
 		//character speed depends on toggle isRunning
-		char_actual_speed = _char->isRunning ? BL_CHARACTER_SPEED * 1.8f : BL_CHARACTER_SPEED;
+		char_actual_speed = _char->isRunning ? BL_CHARACTER_SPEED * 2.5f : BL_CHARACTER_SPEED;
 
 		//Jump/Fall
 
@@ -56,7 +56,7 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 			_char->inAir = 1;
 			_char->airTime = 0;
 			//jump velocity also depends on toggle isRunning
-			_char->zVelocity = _char->isRunning ? BL_CHARACTER_JUMP_VELOCITY * 2 : BL_CHARACTER_JUMP_VELOCITY;
+			_char->zVelocity = _char->isRunning ? BL_CHARACTER_JUMP_VELOCITY * 1.8f : BL_CHARACTER_JUMP_VELOCITY;
 			_char->zOrigin = _char->z;
 
 		}
@@ -166,16 +166,16 @@ void bl_UpdateCharacter(bl_Character* _char, int *_input, float _deltaTime, bl_B
 
 				//check height difference of hexagons and out of bounds
 
-				if((_data->bmpData[_data->bmpWidth*gridPos.y.pInt+gridPos.x.pInt].Height - 
-					_char->z) > (_char->inAir ? 0 : BL_CHARACTER_CLIMB_THRESHOLD)
-					||
-					gridPos.x.pInt < 0
+				if( gridPos.x.pInt < 0
 					||
 					gridPos.y.pInt < 0
 					||
 					gridPos.x.pInt > _data->bmpWidth-1
 					||
 					gridPos.y.pInt > _data->bmpHeight-1
+					||
+					(_data->bmpData[_data->bmpWidth*gridPos.y.pInt + gridPos.x.pInt].Height -
+						_char->z) > (_char->inAir ? 0 : BL_CHARACTER_CLIMB_THRESHOLD)
 					){
 
 						collision=-1;

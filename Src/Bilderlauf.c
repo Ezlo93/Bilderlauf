@@ -203,7 +203,8 @@ void drawHexagon(int _x, int _y, bl_BMPData *_data, int _mode, float _opacity)
 void draw(void)
 	/*************************************************************************/
 { 
-	int i,j,k, mode = 0;
+	int i,j,k, mode = 0, draw_c = 0;
+	int drawborder_left, drawborder_right, drawborder_top, drawborder_bottom;
 	float cullx, cully, cullz, opacity = 1.f, distance;
 	//double left, right, top, bottom;
 	double eyeOffset = 0.15, eyeX, eyeY;
@@ -310,10 +311,21 @@ void draw(void)
 
 
 		//actual drawing of the hexagons
-		ExtractFrustum();
+		//ExtractFrustum();
 
-		for(i = 0; i < bl_PictureData->bmpHeight; i++){
-			for(j = 0; j < bl_PictureData->bmpWidth; j++){
+
+		//change this to do draw distance first
+		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+		drawborder_top = (bl_player->positionOnGridY - DRAWDISTANCE_GRID) < 0 ? 0 : (bl_player->positionOnGridY - DRAWDISTANCE_GRID);
+		drawborder_bottom = (bl_player->positionOnGridY + DRAWDISTANCE_GRID) > bl_PictureData->bmpHeight ? bl_PictureData->bmpHeight : (bl_player->positionOnGridY + DRAWDISTANCE_GRID);
+
+		drawborder_left = (bl_player->positionOnGridX - DRAWDISTANCE_GRID) < 0 ? 0 : (bl_player->positionOnGridX - DRAWDISTANCE_GRID);
+		drawborder_right = (bl_player->positionOnGridX + DRAWDISTANCE_GRID) > bl_PictureData->bmpWidth ? bl_PictureData->bmpWidth : (bl_player->positionOnGridX + DRAWDISTANCE_GRID);
+
+		for(i = drawborder_top;	i < drawborder_bottom; i++){
+
+			for (j = drawborder_left; j < drawborder_right;	j++) {
 
 				//position of hexagon in question
 				cullx = bl_hexawidth * j;
@@ -341,6 +353,7 @@ void draw(void)
 					glPushMatrix();
 					if(drawMode == DRAW_HEXAGON){
 						drawHexagon(j,i, bl_PictureData,mode,opacity);
+						draw_c++;
 					}
 					glPopMatrix();
 
@@ -360,7 +373,7 @@ void draw(void)
 	final_time = time(NULL);
 	if(final_time-init_time > 0){
 #if DEBUG > 0
-		printf("FPS: %d\n", frame_count /(final_time - init_time));
+		printf("FPS: %d - Drawn Hexagons: %d\n", frame_count /(final_time - init_time), draw_c);
 #endif
 		frame_count = 0;
 		init_time = time(NULL);
@@ -447,13 +460,16 @@ void mouseMove(int _x, int _y){
 
 //Update Loop
 void timer(int _a) {
+	unsigned int dtime = 0;
+
 	deltaTimeStart = glutGet(GLUT_ELAPSED_TIME);
 	deltaTime = deltaTimeStart - deltaTimeStartOld;
-	deltaTimeStartOld = deltaTimeStart;
+	deltaTimeStartOld = deltaTimeStart; 
+	dtime = 1000 / fps_limit - deltaTime;
 
 	bl_UpdateCharacter(bl_player, &input, 1/fps_limit, bl_PictureData, bl_hexasize);
 	glutPostRedisplay();
-	glutTimerFunc(1000/fps_limit, timer,0);
+	glutTimerFunc(1000 / fps_limit, timer,0);
 
 }
 
@@ -462,12 +478,6 @@ void reshaping(int _width, int _height) {
 	glViewport(0, 0, _width, _height);
 	winWidth = _width;
 	winHeight = _height;
-}
-
-void visibility(int _visible) {
-	if (_visible == GLUT_VISIBLE) {
-		timer(0);
-	}
 }
 
 
@@ -600,16 +610,13 @@ int main(int argc, char **argv)
 	glEnable  (GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	//glClearColor(0,0.75f,0.75f,1.f);
-
 	glutDisplayFunc(draw);
 	glutReshapeFunc(reshaping);
-	glutVisibilityFunc(visibility);
 
 	//Glut input
 	glutMotionFunc(mouseMove);
 	glutPassiveMotionFunc(mouseMove);
-	glutTimerFunc(1000/fps_limit, timer, 0);
+	
 
 	glutSetCursor(GLUT_CURSOR_NONE);
 
@@ -620,6 +627,9 @@ int main(int argc, char **argv)
 	deltaTimeStart = glutGet(GLUT_ELAPSED_TIME);
 	deltaTimeStartOld = deltaTimeStart;
 	init_time = time(NULL);
+
+
+	timer(1);
 	glutMainLoop();
 	return 0;
 }

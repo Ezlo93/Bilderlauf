@@ -6,9 +6,9 @@
 #include <math.h>
 
 //character properties
-#define BL_CHARACTER_SPEED 12.f 
-#define BL_CHARACTER_HEIGHT 4.f
-#define BL_CHARACTER_CLIMB_THRESHOLD .8f
+#define BL_CHARACTER_SPEED 14.f 
+#define BL_CHARACTER_HEIGHT 4.5f
+#define BL_CHARACTER_CLIMB_THRESHOLD .9f
 #define BL_CHARACTER_JUMP_VELOCITY 20.f
 #define GRAVITY 9.81f
 

@@ -11,6 +11,7 @@ bl_BMPData *CreateBMPData(unsigned char *_bmpData, BL_BITMAPINFOHEADER *_bitmapI
 
 	//Allocate memory for BMPData
 	data = (bl_BMPData*) malloc(sizeof(bl_BMPData));
+
 	if(data == NULL){
 		perror("Allocating memory failed!");
 		exit(10);
@@ -27,6 +28,7 @@ bl_BMPData *CreateBMPData(unsigned char *_bmpData, BL_BITMAPINFOHEADER *_bitmapI
 
 	//Allocate memory for color array
 	data->bmpData = (bl_Color*) malloc(data->bmpHeight * data->bmpWidth * sizeof(bl_Color));
+
 	if(data->bmpData == NULL){
 		perror("Allocating memory failed!");
 		exit(10);
@@ -37,14 +39,15 @@ bl_BMPData *CreateBMPData(unsigned char *_bmpData, BL_BITMAPINFOHEADER *_bitmapI
 
 	for(i = 0; i < data->bmpHeight; i++){
 		for(j = 0; j < data->bmpWidth; j++){
-			data->bmpData[i*data->bmpWidth+j].R = (float)_bmpData[(i*data->bmpWidth+j)*3+(i*pad)]/255.f;
-			data->bmpData[i*data->bmpWidth+j].G = (float)_bmpData[(i*data->bmpWidth+j)*3+(i*pad)+1]/255.f;
-			data->bmpData[i*data->bmpWidth+j].B = (float)_bmpData[(i*data->bmpWidth+j)*3+(i*pad)+2]/255.f;
-			data->bmpData[i*data->bmpWidth+j].Height = 0.f;
+			data->bmpData[i*data->bmpWidth+ (data->bmpWidth-1 - j)].R = (float)_bmpData[(i*data->bmpWidth+j)*3+(i*pad)]/255.f;
+			data->bmpData[i*data->bmpWidth+ (data->bmpWidth-1 - j)].G = (float)_bmpData[(i*data->bmpWidth+j)*3+(i*pad)+1]/255.f;
+			data->bmpData[i*data->bmpWidth+ (data->bmpWidth-1 - j)].B = (float)_bmpData[(i*data->bmpWidth+j)*3+(i*pad)+2]/255.f;
+			data->bmpData[i*data->bmpWidth+ (data->bmpWidth-1 - j)].Height = 0.f;
 
 			//Update min/max if necessary
-			if( ColorCompare(&data->bmpData[i*data->bmpWidth+j], &max) == 0) max = data->bmpData[i*data->bmpWidth+j];
-			if( ColorCompare(&data->bmpData[i*data->bmpWidth+j], &min) == 1) min = data->bmpData[i*data->bmpWidth+j];
+
+			if (ColorCompare(&data->bmpData[i*data->bmpWidth + (data->bmpWidth - 1 - j)], &max) == 0) max = data->bmpData[i*data->bmpWidth + (data->bmpWidth - 1 - j)];
+			if (ColorCompare(&data->bmpData[i*data->bmpWidth + (data->bmpWidth - 1 - j)], &min) == 1) min = data->bmpData[i*data->bmpWidth + (data->bmpWidth - 1 - j)];
 
 		}
 	}
@@ -52,7 +55,7 @@ bl_BMPData *CreateBMPData(unsigned char *_bmpData, BL_BITMAPINFOHEADER *_bitmapI
 	//assign final min/max values
 	data->maxColor = max;
 	data->minColor = min;
-
+	pad = 0;
 
 #if DEBUG > 1
 	//print all pixels
