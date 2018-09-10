@@ -116,7 +116,7 @@ void drawHexagon(int _x, int _y, bl_BMPData *_data, int _mode, float _opacity)
 
 	//Position
 	transX = bl_hexawidth * _x;
-	transY = _data->bmpData[_data->bmpWidth*_y+_x].Height;
+	transY = _data->bmpData[_data->bmpWidth*_y+_x].Height * _opacity;
 	transZ = bl_hexavert * _y;
 
 
@@ -127,11 +127,8 @@ void drawHexagon(int _x, int _y, bl_BMPData *_data, int _mode, float _opacity)
 
 	//Translation & Color of Hexagon
 	glTranslatef(transX, transY, transZ);
-	//if(_mode != 3){
 	glColor4f(_data->bmpData[_data->bmpWidth*_y+_x].R,_data->bmpData[_data->bmpWidth*_y+_x].G,_data->bmpData[_data->bmpWidth*_y+_x].B, _opacity);
-	//}else{
-	//glColor4f(255,255,255,_opacity);
-	//}
+
 
 	//Change height of hexagon
 
@@ -372,7 +369,7 @@ void draw(void)
 	frame_count++;
 	final_time = time(NULL);
 	if(final_time-init_time > 0){
-#if DEBUG > 0
+#if DEBUG > 1
 		printf("FPS: %d - Drawn Hexagons: %d\n", frame_count /(final_time - init_time), draw_c);
 #endif
 		frame_count = 0;
@@ -507,7 +504,7 @@ int main(int argc, char **argv)
 
 		do{
 			printf("---------------------------------\n");
-			printf("Path of BMP file: (h for help)\n");
+			printf("Path of BMP file: (h for help; test or thm for example)\n");
 			fgets(filePath, FILENAMEBUFFER, stdin);
 			strtok(filePath, "\n");
 
