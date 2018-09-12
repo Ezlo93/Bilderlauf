@@ -249,7 +249,7 @@ void draw(void)
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 
-			gluPerspective(60, winWidth / winHeight, 0.1, fern);
+			gluPerspective(FOV, winWidth / winHeight, 0.1, fern);
 
 
 			if(k == 0){
@@ -290,7 +290,7 @@ void draw(void)
 
 			glMatrixMode( GL_PROJECTION );
 			glLoadIdentity();
-			gluPerspective( 60, winWidth / winHeight, 0.1, fern );
+			gluPerspective( FOV, winWidth / winHeight, 0.1, fern );
 
 			bl_CameraUpdate(cameras[cameraCurrent]);
 
