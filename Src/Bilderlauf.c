@@ -369,7 +369,7 @@ void draw(void)
 	frame_count++;
 	final_time = time(NULL);
 	if(final_time-init_time > 0){
-#if DEBUG > 1
+#if DEBUG > 0
 		printf("FPS: %d - Drawn Hexagons: %d\n", frame_count /(final_time - init_time), draw_c);
 #endif
 		frame_count = 0;
@@ -420,7 +420,17 @@ void releaseKey(unsigned char _key, int _x, int _y){
 	case '2': edgecoloring = !edgecoloring;break;
 	case '3': anaglyph = !anaglyph;break;
 	case '4': bl_player->isRunning = !bl_player->isRunning; break;
-	case '5': fps_limit = fps_limit == FPS_60 ? FPS_144 : FPS_60;
+	case '5': 
+		if (fps_limit == FPS_30) {
+			fps_limit = FPS_60;
+		}
+		else if (fps_limit == FPS_60) {
+			fps_limit = FPS_144;
+		}
+		else {
+			fps_limit = FPS_30;
+		}break;
+			  
 	}
 
 }

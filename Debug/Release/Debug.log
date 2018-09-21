@@ -1,18 +1,18 @@
 ﻿  Bilderlauf.c
-..\Src\Bilderlauf.c(467): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[5]' unterschiedlich
-..\Src\Bilderlauf.c(467): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
-..\Src\Bilderlauf.c(493): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+..\Src\Bilderlauf.c(477): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[5]' unterschiedlich
+..\Src\Bilderlauf.c(477): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
+..\Src\Bilderlauf.c(503): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
           C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371): Siehe Deklaration von 'sprintf'
-..\Src\Bilderlauf.c(498): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-..\Src\Bilderlauf.c(509): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+..\Src\Bilderlauf.c(508): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+..\Src\Bilderlauf.c(519): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
           C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string.h(197): Siehe Deklaration von 'strtok'
-..\Src\Bilderlauf.c(536): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+..\Src\Bilderlauf.c(546): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
           C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234): Siehe Deklaration von 'fopen'
-..\Src\Bilderlauf.c(540): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+..\Src\Bilderlauf.c(550): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
           C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371): Siehe Deklaration von 'sprintf'
-..\Src\Bilderlauf.c(541): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+..\Src\Bilderlauf.c(551): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
           C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234): Siehe Deklaration von 'fopen'
-..\Src\Bilderlauf.c(547): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+..\Src\Bilderlauf.c(557): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
           C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371): Siehe Deklaration von 'sprintf'
   Code wird generiert.
   Codegenerierung ist abgeschlossen.

@@ -32,6 +32,7 @@
 #define DRAWDISTANCE_BLEND_DISTANCE 16.f
 #define FPS_60 60.f
 #define FPS_144 144.f
+#define FPS_30 30.f
 #define FOV 50
 
 //hexagon properties
