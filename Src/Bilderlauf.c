@@ -3,7 +3,6 @@
 #include "Bilderlauf.h"
 #include "debug.h"
 
-
 /*Globale Variablen: */
 
 int drawMode = DRAW_HEXAGON;
@@ -262,8 +261,6 @@ void draw(void)
 				glTranslatef(eyeX, 0.0, eyeY);
 			}
 
-			printf("K %d: %f %f\n", k, eyeX, eyeY);
-
 			bl_CameraUpdate(cameras[cameraCurrent]);
 
 			gluLookAt
@@ -308,11 +305,8 @@ void draw(void)
 
 
 		//actual drawing of the hexagons
-		//ExtractFrustum();
+		ExtractFrustum();
 
-
-		//change this to do draw distance first
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		drawborder_top = (bl_player->positionOnGridY - DRAWDISTANCE_GRID) < 0 ? 0 : (bl_player->positionOnGridY - DRAWDISTANCE_GRID);
 		drawborder_bottom = (bl_player->positionOnGridY + DRAWDISTANCE_GRID) > bl_PictureData->bmpHeight ? bl_PictureData->bmpHeight : (bl_player->positionOnGridY + DRAWDISTANCE_GRID);
@@ -370,7 +364,7 @@ void draw(void)
 	final_time = time(NULL);
 	if(final_time-init_time > 0){
 #if DEBUG > 0
-		printf("FPS: %d - Drawn Hexagons: %d\n", frame_count /(final_time - init_time), draw_c);
+		printf("FPS: %d\n", frame_count /(final_time - init_time));
 #endif
 		frame_count = 0;
 		init_time = time(NULL);
@@ -514,7 +508,7 @@ int main(int argc, char **argv)
 
 		do{
 			printf("---------------------------------\n");
-			printf("Path of BMP file: (h for help; test or thm for example)\n");
+			printf("Full path of BMP file: (h for help; test or thm for example)\n");
 			fgets(filePath, FILENAMEBUFFER, stdin);
 			strtok(filePath, "\n");
 
@@ -525,7 +519,9 @@ int main(int argc, char **argv)
 				printf("1\t\tWireframe\n");
 				printf("2\t\tOutline edges\n");
 				printf("3\t\tActivate stereoscopic mode (anaglyph)\n");
-				printf("4\t\tIncrease speed and jump velocity\n\n");
+				printf("4\t\tIncrease speed and jump velocity\n");
+				printf("5\t\tSwitch between 30/60/144 fps\n");
+				printf("p\t\tPrint position information\n\n");
 			}
 
 		}while( strcmp(filePath, "h") == 0);
