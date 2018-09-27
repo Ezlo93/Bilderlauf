@@ -466,9 +466,8 @@ void timer(int _a) {
 	deltaTimeStart = glutGet(GLUT_ELAPSED_TIME);
 	deltaTime = deltaTimeStart - deltaTimeStartOld;
 	deltaTimeStartOld = deltaTimeStart; 
-	dtime = 1000 / fps_limit - deltaTime;
 
-	bl_UpdateCharacter(bl_player, &input, 1/fps_limit, bl_PictureData, bl_hexasize);
+	bl_UpdateCharacter(bl_player, &input, deltaTime/1000.f, bl_PictureData, bl_hexasize);
 	glutPostRedisplay();
 	glutTimerFunc(1000 / fps_limit, timer,0);
 

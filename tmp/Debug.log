@@ -1,7 +1,5 @@
-﻿  bl_character.c
-  Bilderlauf.c
-c:\vsprojects\bilderlauf\src\bilderlauf.c(471): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[5]' unterschiedlich
-c:\vsprojects\bilderlauf\src\bilderlauf.c(471): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
-  Code wird generiert...
+﻿  Bilderlauf.c
+c:\vsprojects\bilderlauf\src\bilderlauf.c(470): warning C4047: 'Funktion': Anzahl der Dereferenzierungen bei 'int *' und 'int (*)[5]' unterschiedlich
+c:\vsprojects\bilderlauf\src\bilderlauf.c(470): warning C4024: 'bl_UpdateCharacter': Unterschiedliche Typen für formalen und übergebenen Parameter 2
   LINK : ..\Exc\Bilderlauf.exe wurde nicht gefunden oder beim letzten inkrementellen Linkvorgang nicht erstellt; vollständiger Link wird durchgeführt.
   Debug.vcxproj -> C:\VSProjects\Bilderlauf\Debug\..\Exc\Bilderlauf.exe
