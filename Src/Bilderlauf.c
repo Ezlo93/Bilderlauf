@@ -2,6 +2,7 @@
 
 #include "Bilderlauf.h"
 #include "debug.h"
+#include <Windows.h>
 
 /*Globale Variablen: */
 
@@ -20,6 +21,7 @@ int anaglyph = 0;
 float    eyez=10., diag=0., viewScale=1., angle[3]={0.,0.,0.};
 int      backF=1, persp=1, winWidth=1636, winHeight=920; 
 GLdouble nah=1., fern=10000.;
+HWND window_handle;
 
 char *title;
 
@@ -364,7 +366,7 @@ void draw(void)
 	final_time = time(NULL);
 	if(final_time-init_time > 0){
 #if DEBUG > 0
-		printf("FPS: %d\n", frame_count /(final_time - init_time));
+		printf("\rFPS: %d", frame_count /(final_time - init_time));
 #endif
 		frame_count = 0;
 		init_time = time(NULL);
@@ -387,7 +389,7 @@ void key(unsigned char _key, int _x, int _y)
 	case 'a': input[2] = 1; break;
 	case 'd': input[3] = 1; break;
 	case SPACE: input[4] = 1; break;
-
+	
 #if DEBUG > 0
 		//case 'r': drawMode = !drawMode; cameraCurrent = (cameraCurrent + 1) % CAMERAMAX;break;
 	case 'p': bl_CameraInfo(cameras[cameraCurrent]);
@@ -432,28 +434,33 @@ void releaseKey(unsigned char _key, int _x, int _y){
 
 
 
-void mouseMove(int _x, int _y){
+void mouseMove(int _x, int _y) {
 
 	static int just_warped = 0;
-	int dx = _x - winWidth/2;
-	int dy = _y - winHeight/2;
+	int dx = _x - winWidth / 2;
+	int dy = _y - winHeight / 2;
 
-	if(just_warped) {
+	if (GetForegroundWindow() != window_handle) {
+		return;
+	}
+
+	if (just_warped) {
 		just_warped = 0;
 		return;
 	}
 
-	if(dx) {
-		bl_CameraRotateYaw(cameras[cameraCurrent],rotation_speed*dx*cameraReverseX);
+	if (dx) {
+		bl_CameraRotateYaw(cameras[cameraCurrent], rotation_speed*dx*cameraReverseX);
 	}
 
-	if(dy) {
-		bl_CameraRotatePitch(cameras[cameraCurrent],rotation_speed*dy*cameraReverseY);
+	if (dy) {
+		bl_CameraRotatePitch(cameras[cameraCurrent], rotation_speed*dy*cameraReverseY);
 	}
 
-	glutWarpPointer(winWidth/2, winHeight/2);
-
+	
+	glutWarpPointer(winWidth / 2, winHeight / 2);
 	just_warped = 1;
+	
 
 }
 
@@ -462,6 +469,12 @@ void mouseMove(int _x, int _y){
 //Update Loop
 void timer(int _a) {
 	unsigned int dtime = 0;
+	char prgNameBuffer[50];
+
+	if (window_handle == NULL) {
+		sprintf(prgNameBuffer, "Bilderlauf %d.%d", MVERSION, SVERSION);
+		window_handle = FindWindowA(NULL, prgNameBuffer);
+	}
 
 	deltaTimeStart = glutGet(GLUT_ELAPSED_TIME);
 	deltaTime = deltaTimeStart - deltaTimeStartOld;
@@ -583,6 +596,16 @@ int main(int argc, char **argv)
 	printf("Loaded \"%s\" in %.3f seconds\n", filePath,
 		(float)(cl_end-cl_begin) / CLOCKS_PER_SEC);
 
+
+		printf("---------------------------------\n");
+		printf("W A S D\t\tMovement\n");
+		printf("Spacebar\tJump\n");
+		printf("1\t\tWireframe\n");
+		printf("2\t\tOutline edges\n");
+		printf("3\t\tActivate stereoscopic mode (anaglyph)\n");
+		printf("4\t\tIncrease speed and jump velocity\n");
+		printf("5\t\tSwitch between 30/60/144 fps\n");
+		printf("p\t\tPrint position information\n\n");
 
 	createHexagonVertices(bl_hexasize, 1.f);
 

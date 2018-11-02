@@ -18,7 +18,7 @@
 
 
 #define MVERSION 1
-#define SVERSION 1
+#define SVERSION 2
 
 #define FILENAMEBUFFER 100
 
